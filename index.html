@@ -122,7 +122,6 @@
                 font-size: 0.9rem;
             }
 
-            /* Icon Buttons */
             .btn-circle {
                 border: none;
                 border-radius: 50%;
@@ -144,7 +143,6 @@
                 transform: translateY(-2px) scale(1.1);
             }
 
-            /* Tombol Edit - Kuning */
             .btn-edit {
                 background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
                 color: #333;
@@ -154,7 +152,6 @@
                 box-shadow: 0 5px 15px rgba(255, 193, 7, 0.5);
             }
 
-            /* Tombol Lihat - Hijau */
             .btn-view {
                 background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
                 color: white;
@@ -164,7 +161,6 @@
                 box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
             }
 
-            /* Container tombol aksi */
             .action-buttons {
                 display: flex;
                 justify-content: center;
@@ -401,7 +397,6 @@
                 transform: translateY(1px);
             }
 
-            /* Mobile Responsive */
             @media (max-width: 768px) {
                 .main-container {
                     padding: 15px;
@@ -493,11 +488,7 @@
                 </button>
                 
                 <div class="table-wrapper">
-                    <table
-                        id="table_data"
-                        class="table table-striped table-bordered"
-                        style="width: 100%"
-                    ></table>
+                    <table id="table_data" class="table table-striped table-bordered" style="width: 100%"></table>
                 </div>
             </div>
         </div>
@@ -505,10 +496,9 @@
         <div class="modal" id="myModal">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-            
                     <div class="modal-header">
-                    <h4 class="modal-title">Tambah Produk</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h4 class="modal-title">Tambah Produk</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
             
                     <div class="modal-body">
@@ -545,7 +535,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="tanggalProduk" class="col-form-label">Tanggal</label>
-                                <input type="text" class="form-control" id="tanggalProduk" required>
+                                <input type="date" class="form-control" id="tanggalProduk" required>
                             </div>
                             <div class="mb-3">
                                 <label for="hargaProduk" class="col-form-label">Harga</label>
@@ -590,11 +580,9 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="button" class="btn btn-success">Simpan</button>
                     </div>
-            
                 </div>
             </div>
         </div>
-        
 
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
@@ -606,31 +594,16 @@
         <script src="https://cdn.datatables.net/responsive/2.4.0/js/responsive.bootstrap.min.js"></script>
         <script>
             $(document).ready(function () {
-                const BASE_URL = "https://script.google.com/macros/s/AKfycbzbG6txwc0bnhJq2W3ABEeGCUHF2lh_gwGLIKXBGnAlfCIwvOlo32fQdtpCQwFisQ/exec";
+                const BASE_URL = "https://script.google.com/macros/s/AKfycbzE4LqynykR_FEQHXT9Hha9tHUmFC_tfOpbM1GGaVv1CQS1ZTKU7hvJyCNeQ_91PS_Q/exec";
                
                 const table = $("#table_data").DataTable({
                     ajax: BASE_URL + "?action=get-product",
                     columns: [
-                        {
-                            title: "NO",
-                            data: "id"
-                        },
-                        {
-                            title: "ITEMS",
-                            data: "items"
-                        },
-                        {
-                            title: "SUPPLIER",
-                            data: "supplier"
-                        },
-                        {
-                            title: "KOTA",
-                            data: "kota"
-                        },
-                        {
-                            title: "GUDANG",
-                            data: "gudang"
-                        },
+                        { title: "NO", data: "id" },
+                        { title: "ITEMS", data: "items" },
+                        { title: "SUPPLIER", data: "supplier" },
+                        { title: "KOTA", data: "kota" },
+                        { title: "GUDANG", data: "gudang" },
                         {
                             title: "TANGGAL",
                             data: "tanggal",
@@ -661,15 +634,8 @@
                                 return data;
                             }
                         },
-                        {
-                            title: "SATUAN",
-                            data: "satuan"
-                        },
-                        {
-                            title: "STOK",
-                            data: "stok",
-                            visible: false
-                        },
+                        { title: "SATUAN", data: "satuan" },
+                        { title: "STOK", data: "stok", visible: false },
                         {
                             title: "AKSI",
                             data: null,
@@ -704,13 +670,14 @@
 
                 $('#table_data tbody').on('click', '.edit', function () {
                     const data = table.row($(this).parents('tr')).data();
-                    console.log(data);
                     $('#idProduk').val(data.id);
                     $('#itemsProduk').val(data.items);
                     $('#supplierProduk').val(data.supplier);
                     $('#kotaProduk').val(data.kota);
                     $('#gudangProduk').val(data.gudang);
-                    $('#tanggalProduk').val(data.tanggal);
+                    // Konversi format dd/mm/yyyy ke yyyy-mm-dd untuk input type="date"
+                    const tanggalFormatted = convertToDateFormat(data.tanggal);
+                    $('#tanggalProduk').val(tanggalFormatted);
                     $('#hargaProduk').val(data.harga);
                     $('#satuanProduk').val(data.satuan);
                     $('#stokProduk').val(data.stok);
@@ -756,6 +723,16 @@
                     })
                 })
             })
+
+            // Helper function: Konversi dd/mm/yyyy ke yyyy-mm-dd
+            function convertToDateFormat(dateString) {
+                if (!dateString) return '';
+                const parts = dateString.split('/');
+                if (parts.length === 3) {
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+                return dateString;
+            }
 
             function clear() {
                 $('#idProduk').val('');
