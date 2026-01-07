@@ -535,7 +535,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="tanggalProduk" class="col-form-label">Tanggal</label>
-                                <input type="date" class="form-control" id="tanggalProduk" required>
+                                <input type="text" class="form-control" id="tanggalProduk" placeholder="dd/mm/yyyy" required>
                             </div>
                             <div class="mb-3">
                                 <label for="hargaProduk" class="col-form-label">Harga</label>
@@ -609,13 +609,6 @@
                             data: "tanggal",
                             render: function(data, type, row) {
                                 if (type === 'display' && data) {
-                                    let date = new Date(data);
-                                    if (!isNaN(date.getTime())) {
-                                        let day = String(date.getDate()).padStart(2, '0');
-                                        let month = String(date.getMonth() + 1).padStart(2, '0');
-                                        let year = date.getFullYear();
-                                        return `${day}/${month}/${year}`;
-                                    }
                                     return data;
                                 }
                                 return data;
@@ -675,9 +668,7 @@
                     $('#supplierProduk').val(data.supplier);
                     $('#kotaProduk').val(data.kota);
                     $('#gudangProduk').val(data.gudang);
-                    // Konversi format dd/mm/yyyy ke yyyy-mm-dd untuk input type="date"
-                    const tanggalFormatted = convertToDateFormat(data.tanggal);
-                    $('#tanggalProduk').val(tanggalFormatted);
+                    $('#tanggalProduk').val(data.tanggal);
                     $('#hargaProduk').val(data.harga);
                     $('#satuanProduk').val(data.satuan);
                     $('#stokProduk').val(data.stok);
@@ -723,16 +714,6 @@
                     })
                 })
             })
-
-            // Helper function: Konversi dd/mm/yyyy ke yyyy-mm-dd
-            function convertToDateFormat(dateString) {
-                if (!dateString) return '';
-                const parts = dateString.split('/');
-                if (parts.length === 3) {
-                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-                return dateString;
-            }
 
             function clear() {
                 $('#idProduk').val('');
