@@ -709,8 +709,14 @@
                     }
 
                     $.getJSON(apiUrl, function(result) {
-                        alert(result.message);
-                        location.reload();
+                        if (result.success) {
+                            alert(result.message);
+                            $('#myModal').modal('hide');
+                            table.ajax.reload(null, false); // Reload tabel tanpa refresh halaman
+                            clear();
+                        } else {
+                            alert('Error: ' + result.message);
+                        }
                     })
                 })
             })
