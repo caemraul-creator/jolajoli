@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.css"/>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.3.1/css/fixedHeader.bootstrap.min.css">
@@ -20,38 +20,51 @@
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 min-height: 100vh;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                padding: 40px 0;
+                padding: 20px 0;
             }
 
             .main-container {
                 background: white;
                 border-radius: 20px;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                padding: 40px;
+                padding: 20px;
                 margin: 0 auto;
                 max-width: 1400px;
+                width: 95%;
             }
 
             .page-title {
-                font-size: 2.5rem;
+                font-size: 2rem;
                 font-weight: 700;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
                 text-align: center;
+            }
+
+            .version-info {
+                text-align: center;
+                font-size: 0.75rem;
+                color: #999;
+                margin-bottom: 15px;
+                font-weight: 500;
             }
 
             .btn-add {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 border: none;
-                padding: 12px 30px;
+                padding: 8px 16px;
                 border-radius: 10px;
                 color: white;
                 font-weight: 600;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                width: auto;
+                margin-bottom: 15px;
+                order: 0;
+                font-size: 0.9rem;
             }
 
             .btn-add:hover {
@@ -63,14 +76,19 @@
             .table-wrapper {
                 background: white;
                 border-radius: 15px;
-                padding: 20px;
+                padding: 0;
                 margin-top: 15px;
                 box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                overflow-x: auto;
+                display: flex;
+                flex-direction: column;
             }
 
             #table_data {
                 border-radius: 10px;
                 overflow: hidden;
+                margin-bottom: 0;
+                order: 3;
             }
 
             #table_data thead {
@@ -80,11 +98,13 @@
 
             #table_data thead th {
                 border: none;
-                padding: 15px;
+                padding: 12px 8px;
                 font-weight: 600;
                 text-transform: uppercase;
-                font-size: 0.85rem;
+                font-size: 0.75rem;
                 letter-spacing: 0.5px;
+                white-space: nowrap;
+                text-align: center;
             }
 
             #table_data tbody tr {
@@ -93,22 +113,24 @@
 
             #table_data tbody tr:hover {
                 background-color: #f8f9ff;
-                transform: scale(1.01);
             }
 
             #table_data tbody td {
-                padding: 15px;
+                padding: 10px 8px;
                 vertical-align: middle;
+                font-size: 0.9rem;
             }
 
             .btn-warning {
                 background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
                 border: none;
-                padding: 8px 20px;
+                padding: 8px 15px;
                 border-radius: 8px;
                 color: white;
                 font-weight: 600;
                 transition: all 0.3s ease;
+                font-size: 0.85rem;
+                white-space: nowrap;
             }
 
             .btn-warning:hover {
@@ -117,23 +139,21 @@
                 color: white;
             }
 
-            .modal-content {
-                border-radius: 20px;
-                border: none;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            .modal-dialog {
+                max-width: 400px;
             }
 
             .modal-header {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 border-radius: 20px 20px 0 0;
-                padding: 20px 30px;
+                padding: 12px 16px;
                 border: none;
             }
 
             .modal-header .modal-title {
                 font-weight: 700;
-                font-size: 1.5rem;
+                font-size: 1rem;
             }
 
             .modal-header .btn-close {
@@ -141,21 +161,23 @@
             }
 
             .modal-body {
-                padding: 30px;
+                padding: 15px;
             }
 
             .modal-body .form-label {
                 font-weight: 600;
                 color: #333;
-                margin-bottom: 8px;
+                margin-bottom: 4px;
+                font-size: 0.85rem;
             }
 
             .modal-body .form-control,
             .modal-body .form-select {
                 border: 2px solid #e0e0e0;
                 border-radius: 10px;
-                padding: 12px 15px;
+                padding: 8px 10px;
                 transition: all 0.3s ease;
+                font-size: 0.9rem;
             }
 
             .modal-body .form-control:focus,
@@ -164,18 +186,25 @@
                 box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
             }
 
+            .mb-3 {
+                margin-bottom: 10px !important;
+            }
+
             .modal-footer {
                 border: none;
-                padding: 20px 30px;
+                padding: 12px 15px;
+                gap: 10px;
             }
 
             .modal-footer .btn-success {
                 background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
                 border: none;
-                padding: 12px 30px;
+                padding: 10px 25px;
                 border-radius: 10px;
                 font-weight: 600;
                 transition: all 0.3s ease;
+                flex: 1;
+                font-size: 0.9rem;
             }
 
             .modal-footer .btn-success:hover {
@@ -183,27 +212,32 @@
                 box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
             }
 
+            .dataTables_wrapper {
+                display: flex;
+                flex-direction: column;
+            }
+
             .dataTables_wrapper .dataTables_filter {
-                float: right;
                 text-align: right;
-                margin-bottom: 10px;
+                margin-bottom: 15px;
+                padding: 0;
             }
 
             .dataTables_wrapper .dataTables_filter label {
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 gap: 10px;
                 font-weight: 600;
                 color: #667eea;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
 
             .dataTables_wrapper .dataTables_filter input {
                 border: 2px solid #e0e0e0;
                 border-radius: 12px;
-                padding: 10px 20px;
+                padding: 10px 15px;
                 margin-left: 0;
-                width: 280px;
+                width: 250px;
                 transition: all 0.3s ease;
                 background: #f8f9ff;
                 font-size: 0.95rem;
@@ -221,17 +255,20 @@
             }
 
             .dataTables_wrapper .dataTables_length {
-                float: left;
-                margin-bottom: 15px;
+                float: none;
+                margin-bottom: 0;
+                padding: 0;
+                order: 2;
             }
 
             .dataTables_wrapper .dataTables_length label {
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 gap: 10px;
                 font-weight: 600;
                 color: #667eea;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
+                margin: 0;
             }
 
             .dataTables_wrapper .dataTables_length select {
@@ -252,10 +289,51 @@
             }
 
             .dataTables_wrapper .dataTables_info {
-                padding-top: 15px;
-                font-size: 0.9rem;
+                padding: 10px;
+                font-size: 0.85rem;
                 color: #666;
                 font-weight: 500;
+                order: 4;
+            }
+
+            .dataTables_wrapper .dataTables_paginate {
+                padding: 10px;
+                order: 5;
+                display: flex;
+                justify-content: flex-end;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 6px 8px !important;
+                border-radius: 4px !important;
+                margin: 0 1px !important;
+                font-size: 0.85rem !important;
+                font-weight: 500 !important;
+                color: #333 !important;
+                background: transparent !important;
+                border: none !important;
+                cursor: pointer !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+                background: transparent !important;
+                border: none !important;
+                color: #333 !important;
+                border-radius: 4px;
+                font-weight: 700 !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background: transparent !important;
+                border: none !important;
+                color: #667eea !important;
+                border-radius: 4px;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+                color: #999 !important;
             }
 
             .dataTables_wrapper .dataTables_paginate .paginate_button.current {
@@ -272,7 +350,6 @@
                 border-radius: 8px;
             }
 
-            /* Elegant "Previous" button styling */
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous {
                 border: none !important;
                 background: transparent !important;
@@ -297,14 +374,119 @@
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous:active span.dt-prev {
                 transform: translateY(1px);
             }
+
+            /* Mobile Responsive */
+            @media (max-width: 768px) {
+                .main-container {
+                    padding: 15px;
+                    width: 100%;
+                    border-radius: 15px;
+                }
+
+                .page-title {
+                    font-size: 1.5rem;
+                    margin-bottom: 15px;
+                }
+
+                .btn-add {
+                    padding: 10px 15px;
+                    font-size: 0.95rem;
+                }
+
+                .table-wrapper {
+                    padding: 10px;
+                }
+
+                #table_data thead th {
+                    padding: 8px 5px;
+                    font-size: 0.7rem;
+                }
+
+                #table_data tbody td {
+                    padding: 8px 5px;
+                    font-size: 0.8rem;
+                }
+
+                .btn-warning {
+                    padding: 6px 10px;
+                    font-size: 0.75rem;
+                }
+
+                .modal-body {
+                    padding: 15px;
+                }
+
+                .modal-body .form-label {
+                    font-size: 0.9rem;
+                    margin-bottom: 5px;
+                }
+
+                .modal-body .form-control,
+                .modal-body .form-select {
+                    padding: 8px 10px;
+                    font-size: 16px;
+                }
+
+                .modal-header .modal-title {
+                    font-size: 1.1rem;
+                }
+
+                .dataTables_wrapper .dataTables_filter label,
+                .dataTables_wrapper .dataTables_length label {
+                    font-size: 0.85rem;
+                }
+
+                .dataTables_wrapper .dataTables_filter input {
+                    font-size: 0.9rem;
+                    padding: 8px 12px;
+                }
+
+                .dataTables_wrapper .dataTables_info {
+                    font-size: 0.75rem;
+                }
+
+                .dataTables_wrapper .dataTables_paginate .paginate_button {
+                    padding: 4px 6px !important;
+                }
+            }
+
+            @media (max-width: 576px) {
+                body {
+                    padding: 10px 0;
+                }
+
+                .main-container {
+                    padding: 12px;
+                    margin: 0 auto;
+                }
+
+                .page-title {
+                    font-size: 1.3rem;
+                }
+
+                #table_data thead th {
+                    padding: 6px 3px;
+                    font-size: 0.65rem;
+                }
+
+                #table_data tbody td {
+                    padding: 6px 3px;
+                    font-size: 0.75rem;
+                }
+
+                .btn-warning {
+                    padding: 5px 8px;
+                    font-size: 0.7rem;
+                }
+            }
         </style>
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div class="main-container">
                 <h1 class="page-title">DailyNota</h1>
+                <div class="version-info">v2.0 © 2026</div>
                 
-                <!-- Button trigger modal -->
                 <button type="button" class="btn btn-add" id="tambahProduk">
                     + Tambah Produk
                 </button>
@@ -318,35 +500,33 @@
                 </div>
             </div>
         </div>
-       <!-- The Modal -->
+       
         <div class="modal" id="myModal">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
             
-                    <!-- Modal Header -->
                     <div class="modal-header">
                     <h4 class="modal-title">Tambah Produk</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
             
-                    <!-- Modal body -->
                     <div class="modal-body">
                         <form>
                             <input type="hidden" class="form-control" id="idProduk">
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Items</label>
+                                <label for="itemsProduk" class="col-form-label">Items</label>
                                 <input type="text" class="form-control" id="itemsProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Supplier</label>
+                                <label for="supplierProduk" class="col-form-label">Supplier</label>
                                 <input type="text" class="form-control" id="supplierProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Kota</label>
+                                <label for="kotaProduk" class="col-form-label">Kota</label>
                                 <input type="text" class="form-control" id="kotaProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Gudang</label>
+                                <label for="gudangProduk" class="col-form-label">Gudang</label>
                                 <select class="form-control" id="gudangProduk" required>
                                     <option value="">Pilih Gudang</option>
                                     <option value="Kalipucang">Kalipucang</option>
@@ -363,15 +543,15 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Tanggal</label>
+                                <label for="tanggalProduk" class="col-form-label">Tanggal</label>
                                 <input type="text" class="form-control" id="tanggalProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Harga</label>
+                                <label for="hargaProduk" class="col-form-label">Harga</label>
                                 <input type="text" class="form-control" id="hargaProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Satuan</label>
+                                <label for="satuanProduk" class="col-form-label">Satuan</label>
                                 <select class="form-control" id="satuanProduk" required>
                                     <option value="klg">klg</option>
                                     <option value="ml">ml</option>
@@ -396,15 +576,14 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Stok</label>
-                                <input type="tex" class="form-control" id="stokProduk" required>
+                                <label for="stokProduk" class="col-form-label">Stok</label>
+                                <input type="text" class="form-control" id="stokProduk" required>
                             </div>
-                            
                         </form>
                     </div>
-                    <!-- Modal footer -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="flex: 1;">Batal</button>
+                        <button type="button" class="btn btn-success" style="flex: 1;">Simpan</button>
                     </div>
             
                 </div>
@@ -452,18 +631,13 @@
                             data: "tanggal",
                             render: function(data, type, row) {
                                 if (type === 'display' && data) {
-                                    // Try to parse the date
                                     let date = new Date(data);
-                                    
-                                    // Check if date is valid
                                     if (!isNaN(date.getTime())) {
                                         let day = String(date.getDate()).padStart(2, '0');
                                         let month = String(date.getMonth() + 1).padStart(2, '0');
                                         let year = date.getFullYear();
                                         return `${day}/${month}/${year}`;
                                     }
-                                    
-                                    // If already in dd/mm/yyyy format, return as is
                                     return data;
                                 }
                                 return data;
@@ -475,7 +649,6 @@
                             className: "text-end",
                             render: function(data, type, row) {
                                 if (type === 'display') {
-                                    // Format number with thousand separator
                                     const number = parseFloat(data);
                                     if (isNaN(number)) return data;
                                     return number.toLocaleString('id-ID');
@@ -489,7 +662,8 @@
                         },
                         {
                             title: "STOK",
-                            data: "stok"
+                            data: "stok",
+                            visible: false
                         },
                         {
                             title: "EDIT",
