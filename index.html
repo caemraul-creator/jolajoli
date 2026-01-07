@@ -139,6 +139,25 @@
                 color: white;
             }
 
+            .btn-info {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                padding: 8px 15px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                margin-left: 5px;
+            }
+
+            .btn-info:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                color: white;
+            }
+
             .modal-dialog {
                 max-width: 400px;
             }
@@ -485,7 +504,7 @@
         <div class="container-fluid">
             <div class="main-container">
                 <h1 class="page-title">DailyNota</h1>
-                <div class="version-info">v2.0 © 2026</div>
+                <div class="version-info">v1.0 © 2025</div>
                 
                 <button type="button" class="btn btn-add" id="tambahProduk">
                     + Tambah Produk
@@ -572,17 +591,16 @@
                                     <option value="rtg">rtg</option>
                                     <option value="lsn">lsn</option>
                                     <option value="gln">gln</option>
-                                    <option value="sak">sak</option>
-                                    <option value="drm">drm</option>
-                                    <option value="barel">barel</option>
-                                    <option value="ball">ball</option>
-                                    <option value="btl">btl</option>
                                     <option value="lainnya">lainnya</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="stokProduk" class="col-form-label">Stok</label>
                                 <input type="text" class="form-control" id="stokProduk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="deskripsiProduk" class="col-form-label">Deskripsi</label>
+                                <textarea class="form-control" id="deskripsiProduk" rows="3" placeholder="Opsional"></textarea>
                             </div>
                         </form>
                     </div>
@@ -674,7 +692,7 @@
                             title: "EDIT",
                             targets: -1,
                             data: null,
-                            defaultContent: '<button class="btn btn-warning" id="edit">Edit</button>'
+                            defaultContent: '<button class="btn btn-warning" id="edit">Edit</button> <button class="btn btn-info" id="view">Lihat</button>'
                         }
                        
                     ],
@@ -706,8 +724,15 @@
                     $('#hargaProduk').val(data.harga);
                     $('#satuanProduk').val(data.satuan);
                     $('#stokProduk').val(data.stok);
+                    $('#deskripsiProduk').val(data.deskripsi || '');
                     $('#myModal').modal('show');
                     $('#myModal .modal-title').text('Edit Produk');
+                })
+
+                $('#table_data tbody').on('click', '#view', function () {
+                    const data = table.row($(this).parents('tr')).data();
+                    const deskripsi = data.deskripsi || 'Tidak ada deskripsi';
+                    alert('Deskripsi: ' + deskripsi);
                 })
 
                 $('.modal-footer .btn-success').on('click', () => {
@@ -719,6 +744,7 @@
                     const hargaProduk = $('#hargaProduk').val();
                     const satuanProduk = $('#satuanProduk').val();
                     const stokProduk = $('#stokProduk').val();
+                    const deskripsiProduk = $('#deskripsiProduk').val();
                     const idProduk = $('#idProduk').val();
 
                     if (itemsProduk == '' || supplierProduk == '' || kotaProduk == '' || gudangProduk == '' || tanggalProduk == '' || hargaProduk == '' || satuanProduk == '' || stokProduk == '') {
@@ -729,9 +755,9 @@
                     let apiUrl = '';
 
                     if (idProduk) {
-                        apiUrl = `${BASE_URL}?action=update&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}&id=${idProduk}`;
+                        apiUrl = `${BASE_URL}?action=update&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}&deskripsi=${encodeURIComponent(deskripsiProduk)}&id=${idProduk}`;
                     } else {
-                        apiUrl = `${BASE_URL}?action=insert&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}`;
+                        apiUrl = `${BASE_URL}?action=insert&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}&deskripsi=${encodeURIComponent(deskripsiProduk)}`;
                     }
 
                     $.getJSON(apiUrl, function(result) {
@@ -751,6 +777,7 @@
                 $('#hargaProduk').val('');
                 $('#satuanProduk').val('');
                 $('#stokProduk').val('');
+                $('#deskripsiProduk').val('');
             }
 
         </script>
