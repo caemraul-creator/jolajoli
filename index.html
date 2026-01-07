@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.css"/>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.3.1/css/fixedHeader.bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.0/css/responsive.bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
         <title>DailyNota</title>
         <style>
             * {
@@ -121,41 +122,53 @@
                 font-size: 0.9rem;
             }
 
-            .btn-warning {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            /* Icon Buttons */
+            .btn-circle {
                 border: none;
-                padding: 8px 15px;
-                border-radius: 8px;
-                color: white;
-                font-weight: 600;
+                border-radius: 50%;
+                width: 25px;
+                height: 25px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 transition: all 0.3s ease;
-                font-size: 0.85rem;
-                white-space: nowrap;
+                font-size: 0.75rem;
+                margin: 0 3px;
+                color: white;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+                cursor: pointer;
+                border: 2px solid transparent;
             }
 
-            .btn-warning:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+            .btn-circle:hover {
+                transform: translateY(-2px) scale(1.1);
+            }
+
+            /* Tombol Edit - Kuning */
+            .btn-edit {
+                background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+                color: #333;
+            }
+
+            .btn-edit:hover {
+                box-shadow: 0 5px 15px rgba(255, 193, 7, 0.5);
+            }
+
+            /* Tombol Lihat - Hijau */
+            .btn-view {
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
                 color: white;
             }
 
-            .btn-info {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none;
-                padding: 8px 15px;
-                border-radius: 8px;
-                color: white;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                font-size: 0.85rem;
-                white-space: nowrap;
-                margin-left: 5px;
+            .btn-view:hover {
+                box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
             }
 
-            .btn-info:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-                color: white;
+            /* Container tombol aksi */
+            .action-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
             }
 
             .modal-dialog {
@@ -216,7 +229,7 @@
             }
 
             .modal-footer .btn-success {
-                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
                 border: none;
                 padding: 10px 25px;
                 border-radius: 10px;
@@ -224,11 +237,16 @@
                 transition: all 0.3s ease;
                 flex: 1;
                 font-size: 0.9rem;
+                color: white;
             }
 
             .modal-footer .btn-success:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+                box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            }
+
+            .modal-footer .btn-secondary {
+                flex: 1;
             }
 
             .dataTables_wrapper {
@@ -337,17 +355,17 @@
             }
 
             .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-                background: transparent !important;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 border: none !important;
-                color: #333 !important;
+                color: white !important;
                 border-radius: 4px;
                 font-weight: 700 !important;
             }
 
             .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-                background: transparent !important;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 border: none !important;
-                color: #667eea !important;
+                color: white !important;
                 border-radius: 4px;
             }
 
@@ -355,25 +373,12 @@
                 color: #999 !important;
             }
 
-            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                border: none !important;
-                color: white !important;
-                border-radius: 8px;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                border: none !important;
-                color: white !important;
-                border-radius: 8px;
-            }
-
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 6px !important;
             }
+
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous span.dt-prev {
                 display: inline-flex;
                 align-items: center;
@@ -387,9 +392,11 @@
                 font-weight: 700;
                 line-height: 1;
             }
+
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover {
                 background: transparent !important;
             }
+
             .dataTables_wrapper .dataTables_paginate .paginate_button.previous:active span.dt-prev {
                 transform: translateY(1px);
             }
@@ -426,46 +433,15 @@
                     font-size: 0.8rem;
                 }
 
-                .btn-warning {
-                    padding: 6px 10px;
-                    font-size: 0.75rem;
+                .btn-circle {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 0.95rem;
+                    margin: 0 2px;
                 }
 
-                .modal-body {
-                    padding: 15px;
-                }
-
-                .modal-body .form-label {
-                    font-size: 0.9rem;
-                    margin-bottom: 5px;
-                }
-
-                .modal-body .form-control,
-                .modal-body .form-select {
-                    padding: 8px 10px;
-                    font-size: 16px;
-                }
-
-                .modal-header .modal-title {
-                    font-size: 1.1rem;
-                }
-
-                .dataTables_wrapper .dataTables_filter label,
-                .dataTables_wrapper .dataTables_length label {
-                    font-size: 0.85rem;
-                }
-
-                .dataTables_wrapper .dataTables_filter input {
-                    font-size: 0.9rem;
-                    padding: 8px 12px;
-                }
-
-                .dataTables_wrapper .dataTables_info {
-                    font-size: 0.75rem;
-                }
-
-                .dataTables_wrapper .dataTables_paginate .paginate_button {
-                    padding: 4px 6px !important;
+                .action-buttons {
+                    gap: 5px;
                 }
             }
 
@@ -493,9 +469,15 @@
                     font-size: 0.75rem;
                 }
 
-                .btn-warning {
-                    padding: 5px 8px;
-                    font-size: 0.7rem;
+                .btn-circle {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 0.9rem;
+                    margin: 0 1px;
+                }
+
+                .action-buttons {
+                    gap: 3px;
                 }
             }
         </style>
@@ -605,8 +587,8 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="flex: 1;">Batal</button>
-                        <button type="button" class="btn btn-success" style="flex: 1;">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-success">Simpan</button>
                     </div>
             
                 </div>
@@ -689,22 +671,30 @@
                             visible: false
                         },
                         {
-                            title: "EDIT",
-                            targets: -1,
+                            title: "AKSI",
                             data: null,
-                            defaultContent: '<button class="btn btn-warning" id="edit">Edit</button> <button class="btn btn-info" id="view">Lihat</button>'
+                            className: "text-center",
+                            render: function(data, type, row) {
+                                return `
+                                    <div class="action-buttons">
+                                        <button class="btn-circle btn-edit edit" data-id="${row.id}" title="Edit">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                        <button class="btn-circle btn-view view" data-id="${row.id}" title="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                `;
+                            }
                         }
-                       
                     ],
-                    rawId: "id",
-                    liveAjax: true,
                     responsive: true,
                     language: {
                         paginate: {
                             previous: '<span class="dt-prev" aria-label="Sebelumnya">‹</span>'
                         }
                     }
-                })
+                });
 
                 $('#tambahProduk').on('click', () => {
                     clear();
@@ -712,7 +702,7 @@
                     $('#myModal .modal-title').text('Tambah Produk');
                 })
 
-                $('#table_data tbody').on('click', '#edit', function () {
+                $('#table_data tbody').on('click', '.edit', function () {
                     const data = table.row($(this).parents('tr')).data();
                     console.log(data);
                     $('#idProduk').val(data.id);
@@ -729,7 +719,7 @@
                     $('#myModal .modal-title').text('Edit Produk');
                 })
 
-                $('#table_data tbody').on('click', '#view', function () {
+                $('#table_data tbody').on('click', '.view', function () {
                     const data = table.row($(this).parents('tr')).data();
                     const deskripsi = data.deskripsi || 'Tidak ada deskripsi';
                     alert('Deskripsi: ' + deskripsi);
@@ -779,7 +769,6 @@
                 $('#stokProduk').val('');
                 $('#deskripsiProduk').val('');
             }
-
         </script>
     </body>
 </html>
