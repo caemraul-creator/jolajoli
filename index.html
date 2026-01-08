@@ -214,6 +214,17 @@
                 box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
             }
 
+            .form-control.is-invalid {
+                border-color: #dc3545;
+            }
+
+            .invalid-feedback {
+                color: #dc3545;
+                font-size: 0.85rem;
+                margin-top: 2px;
+                display: block;
+            }
+
             .mb-3 {
                 margin-bottom: 10px !important;
             }
@@ -505,19 +516,19 @@
                         <form>
                             <input type="hidden" class="form-control" id="idProduk">
                             <div class="mb-3">
-                                <label for="itemsProduk" class="col-form-label">Items</label>
+                                <label for="itemsProduk" class="form-label">Items</label>
                                 <input type="text" class="form-control" id="itemsProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="supplierProduk" class="col-form-label">Supplier</label>
+                                <label for="supplierProduk" class="form-label">Supplier</label>
                                 <input type="text" class="form-control" id="supplierProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="kotaProduk" class="col-form-label">Kota</label>
+                                <label for="kotaProduk" class="form-label">Kota</label>
                                 <input type="text" class="form-control" id="kotaProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="gudangProduk" class="col-form-label">Gudang</label>
+                                <label for="gudangProduk" class="form-label">Gudang</label>
                                 <select class="form-control" id="gudangProduk" required>
                                     <option value="">Pilih Gudang</option>
                                     <option value="Kalipucang">Kalipucang</option>
@@ -534,16 +545,18 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="tanggalProduk" class="col-form-label">Tanggal</label>
+                                <label for="tanggalProduk" class="form-label">Tanggal (dd/mm/yyyy)</label>
                                 <input type="text" class="form-control" id="tanggalProduk" placeholder="dd/mm/yyyy" required>
+                                <div class="invalid-feedback" id="tanggalError"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="hargaProduk" class="col-form-label">Harga</label>
+                                <label for="hargaProduk" class="form-label">Harga</label>
                                 <input type="text" class="form-control" id="hargaProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="satuanProduk" class="col-form-label">Satuan</label>
+                                <label for="satuanProduk" class="form-label">Satuan</label>
                                 <select class="form-control" id="satuanProduk" required>
+                                    <option value="">Pilih Satuan</option>
                                     <option value="klg">klg</option>
                                     <option value="ml">ml</option>
                                     <option value="ons">ons</option>
@@ -567,11 +580,11 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="stokProduk" class="col-form-label">Stok</label>
+                                <label for="stokProduk" class="form-label">Stok</label>
                                 <input type="text" class="form-control" id="stokProduk" required>
                             </div>
                             <div class="mb-3">
-                                <label for="deskripsiProduk" class="col-form-label">Deskripsi</label>
+                                <label for="deskripsiProduk" class="form-label">Deskripsi</label>
                                 <textarea class="form-control" id="deskripsiProduk" rows="3" placeholder="Opsional"></textarea>
                             </div>
                         </form>
@@ -594,8 +607,30 @@
         <script src="https://cdn.datatables.net/responsive/2.4.0/js/responsive.bootstrap.min.js"></script>
         <script>
             $(document).ready(function () {
-                const BASE_URL = "https://script.google.com/macros/s/AKfycbzE4LqynykR_FEQHXT9Hha9tHUmFC_tfOpbM1GGaVv1CQS1ZTKU7hvJyCNeQ_91PS_Q/exec";
+                const BASE_URL = "https://script.google.com/macros/s/AKfycbyt9jW3tMt6uxcu15T0M2IsMCSXrrLT31Dueh3VOc4Bx3vqk0EdVp_ErTMmAHN1v70A/exec";
                
+                // Fungsi validasi format dd/mm/yyyy
+                function isValidTanggal(tanggal) {
+                    const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+                    if (!regex.test(tanggal)) return false;
+                    
+                    const parts = tanggal.split('/');
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    const year = parseInt(parts[2], 10);
+                    
+                    if (month < 1 || month > 12) return false;
+                    if (day < 1 || day > 31) return false;
+                    
+                    // Cek hari valid untuk bulan tertentu
+                    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    if (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+                        daysInMonth[1] = 29;
+                    }
+                    
+                    return day <= daysInMonth[month - 1];
+                }
+                
                 const table = $("#table_data").DataTable({
                     ajax: BASE_URL + "?action=get-product",
                     columns: [
@@ -608,10 +643,8 @@
                             title: "TANGGAL",
                             data: "tanggal",
                             render: function(data, type, row) {
-                                if (type === 'display' && data) {
-                                    return data;
-                                }
-                                return data;
+                                // Tanggal sudah dalam format dd/mm/yyyy dari server
+                                return data || '-';
                             }
                         },
                         {
@@ -668,7 +701,7 @@
                     $('#supplierProduk').val(data.supplier);
                     $('#kotaProduk').val(data.kota);
                     $('#gudangProduk').val(data.gudang);
-                    $('#tanggalProduk').val(data.tanggal);
+                    $('#tanggalProduk').val(data.tanggal); // Format sudah dd/mm/yyyy
                     $('#hargaProduk').val(data.harga);
                     $('#satuanProduk').val(data.satuan);
                     $('#stokProduk').val(data.stok);
@@ -695,10 +728,20 @@
                     const deskripsiProduk = $('#deskripsiProduk').val();
                     const idProduk = $('#idProduk').val();
 
+                    // Validasi field wajib
                     if (itemsProduk == '' || supplierProduk == '' || kotaProduk == '' || gudangProduk == '' || tanggalProduk == '' || hargaProduk == '' || satuanProduk == '' || stokProduk == '') {
-                        alert('Harap lengkapi semua field !')
-                        return
+                        alert('Harap lengkapi semua field !');
+                        return;
                     }
+
+                    // Validasi format tanggal
+                    if (!isValidTanggal(tanggalProduk)) {
+                        $('#tanggalProduk').addClass('is-invalid');
+                        $('#tanggalError').text('Format tanggal harus dd/mm/yyyy (contoh: 25/12/2025)');
+                        return;
+                    }
+
+                    $('#tanggalProduk').removeClass('is-invalid');
 
                     let apiUrl = '';
 
@@ -712,7 +755,7 @@
                         if (result.success) {
                             alert(result.message);
                             $('#myModal').modal('hide');
-                            table.ajax.reload(null, false); // Reload tabel tanpa refresh halaman
+                            table.ajax.reload(null, false);
                             clear();
                         } else {
                             alert('Error: ' + result.message);
@@ -732,6 +775,7 @@
                 $('#satuanProduk').val('');
                 $('#stokProduk').val('');
                 $('#deskripsiProduk').val('');
+                $('#tanggalProduk').removeClass('is-invalid');
             }
         </script>
     </body>
