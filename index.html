@@ -608,7 +608,12 @@
         <script>
             $(document).ready(function () {
                 const BASE_URL = "https://script.google.com/macros/s/AKfycbyt9jW3tMt6uxcu15T0M2IsMCSXrrLT31Dueh3VOc4Bx3vqk0EdVp_ErTMmAHN1v70A/exec";
-               
+                
+                // Fungsi untuk encode nilai parameter URL
+                function encodeURLParam(value) {
+                    return encodeURIComponent(value);
+                }
+                
                 // Fungsi validasi format dd/mm/yyyy
                 function isValidTanggal(tanggal) {
                     const regex = /^\d{2}\/\d{2}\/\d{4}$/;
@@ -743,14 +748,37 @@
 
                     $('#tanggalProduk').removeClass('is-invalid');
 
-                    let apiUrl = '';
-
+                    // Bangun URL dengan encodeURIComponent untuk semua parameter
+                    let apiUrl = BASE_URL;
+                    
                     if (idProduk) {
-                        apiUrl = `${BASE_URL}?action=update&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}&deskripsi=${encodeURIComponent(deskripsiProduk)}&id=${idProduk}`;
+                        // Untuk update
+                        apiUrl += '?action=update' +
+                                '&items=' + encodeURLParam(itemsProduk) +
+                                '&supplier=' + encodeURLParam(supplierProduk) +
+                                '&kota=' + encodeURLParam(kotaProduk) +
+                                '&gudang=' + encodeURLParam(gudangProduk) +
+                                '&tanggal=' + encodeURLParam(tanggalProduk) +
+                                '&harga=' + encodeURLParam(hargaProduk) +
+                                '&satuan=' + encodeURLParam(satuanProduk) +
+                                '&stok=' + encodeURLParam(stokProduk) +
+                                '&deskripsi=' + encodeURLParam(deskripsiProduk) +
+                                '&id=' + encodeURLParam(idProduk);
                     } else {
-                        apiUrl = `${BASE_URL}?action=insert&items=${itemsProduk}&supplier=${supplierProduk}&kota=${kotaProduk}&gudang=${gudangProduk}&tanggal=${tanggalProduk}&harga=${hargaProduk}&satuan=${satuanProduk}&stok=${stokProduk}&deskripsi=${encodeURIComponent(deskripsiProduk)}`;
+                        // Untuk insert
+                        apiUrl += '?action=insert' +
+                                '&items=' + encodeURLParam(itemsProduk) +
+                                '&supplier=' + encodeURLParam(supplierProduk) +
+                                '&kota=' + encodeURLParam(kotaProduk) +
+                                '&gudang=' + encodeURLParam(gudangProduk) +
+                                '&tanggal=' + encodeURLParam(tanggalProduk) +
+                                '&harga=' + encodeURLParam(hargaProduk) +
+                                '&satuan=' + encodeURLParam(satuanProduk) +
+                                '&stok=' + encodeURLParam(stokProduk) +
+                                '&deskripsi=' + encodeURLParam(deskripsiProduk);
                     }
 
+                    // Kirim permintaan dengan GET
                     $.getJSON(apiUrl, function(result) {
                         if (result.success) {
                             alert(result.message);
@@ -760,9 +788,13 @@
                         } else {
                             alert('Error: ' + result.message);
                         }
-                    })
-                })
-            })
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error('Request failed:', textStatus, errorThrown);
+                        console.log('URL yang dikirim:', apiUrl);
+                        alert('Gagal menyimpan data. Periksa koneksi internet Anda.');
+                    });
+                });
+            });
 
             function clear() {
                 $('#idProduk').val('');
