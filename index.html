@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.3.1/css/fixedHeader.bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.0/css/responsive.bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-        <title>DailyNota</title>
+        <title>DailyNota - Optimized</title>
         <style>
             * {
                 margin: 0;
@@ -252,8 +252,21 @@
                 box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
             }
 
+            .modal-footer .btn-success:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
             .modal-footer .btn-secondary {
                 flex: 1;
+            }
+
+            /* Loading spinner */
+            .spinner-border-sm {
+                width: 1rem;
+                height: 1rem;
+                border-width: 0.15em;
             }
 
             .dataTables_wrapper {
@@ -492,7 +505,7 @@
         <div class="container-fluid">
             <div class="main-container">
                 <h1 class="page-title">DailyNota</h1>
-                <div class="version-info">v2.0 © 2025</div>
+                <div class="version-info">v2.1 Optimized © 2025</div>
                 
                 <button type="button" class="btn btn-add" id="tambahProduk">
                     + Tambah Produk
@@ -513,7 +526,7 @@
                     </div>
             
                     <div class="modal-body">
-                        <form>
+                        <form id="productForm">
                             <input type="hidden" class="form-control" id="idProduk">
                             <div class="mb-3">
                                 <label for="itemsProduk" class="form-label">Items</label>
@@ -591,7 +604,10 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-success">Simpan</button>
+                        <button type="button" class="btn btn-success" id="btnSimpan">
+                            <span class="btn-text">Simpan</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -609,32 +625,40 @@
             $(document).ready(function () {
                 const BASE_URL = "https://script.google.com/macros/s/AKfycbyt9jW3tMt6uxcu15T0M2IsMCSXrrLT31Dueh3VOc4Bx3vqk0EdVp_ErTMmAHN1v70A/exec";
                 
+                // Cache untuk menyimpan data sementara
+                let isSaving = false;
+                
                 // Fungsi untuk encode nilai parameter URL
                 function encodeURLParam(value) {
                     return encodeURIComponent(value);
                 }
                 
-                // Fungsi validasi format dd/mm/yyyy
+                // Fungsi validasi format dd/mm/yyyy yang lebih cepat
                 function isValidTanggal(tanggal) {
-                    const regex = /^\d{2}\/\d{2}\/\d{4}$/;
-                    if (!regex.test(tanggal)) return false;
+                    // Quick regex check
+                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(tanggal)) return false;
                     
-                    const parts = tanggal.split('/');
-                    const day = parseInt(parts[0], 10);
-                    const month = parseInt(parts[1], 10);
-                    const year = parseInt(parts[2], 10);
+                    const [day, month, year] = tanggal.split('/').map(Number);
                     
-                    if (month < 1 || month > 12) return false;
-                    if (day < 1 || day > 31) return false;
+                    // Quick range check
+                    if (month < 1 || month > 12 || day < 1 || day > 31) return false;
                     
-                    // Cek hari valid untuk bulan tertentu
-                    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-                    if (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
-                        daysInMonth[1] = 29;
-                    }
+                    // Days in month (optimized)
+                    const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
                     
                     return day <= daysInMonth[month - 1];
                 }
+                
+                // Validasi realtime untuk tanggal
+                $('#tanggalProduk').on('input', function() {
+                    const val = $(this).val();
+                    if (val && !isValidTanggal(val)) {
+                        $(this).addClass('is-invalid');
+                        $('#tanggalError').text('Format: dd/mm/yyyy');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
                 
                 const table = $("#table_data").DataTable({
                     ajax: BASE_URL + "?action=get-product",
@@ -647,8 +671,7 @@
                         {
                             title: "TANGGAL",
                             data: "tanggal",
-                            render: function(data, type, row) {
-                                // Tanggal sudah dalam format dd/mm/yyyy dari server
+                            render: function(data) {
                                 return data || '-';
                             }
                         },
@@ -656,11 +679,10 @@
                             title: "HARGA",
                             data: "harga",
                             className: "text-end",
-                            render: function(data, type, row) {
+                            render: function(data, type) {
                                 if (type === 'display') {
                                     const number = parseFloat(data);
-                                    if (isNaN(number)) return data;
-                                    return number.toLocaleString('id-ID');
+                                    return isNaN(number) ? data : number.toLocaleString('id-ID');
                                 }
                                 return data;
                             }
@@ -686,6 +708,7 @@
                         }
                     ],
                     responsive: true,
+                    deferRender: true, // Optimasi rendering
                     language: {
                         paginate: {
                             previous: '<span class="dt-prev" aria-label="Sebelumnya">‹</span>'
@@ -706,7 +729,7 @@
                     $('#supplierProduk').val(data.supplier);
                     $('#kotaProduk').val(data.kota);
                     $('#gudangProduk').val(data.gudang);
-                    $('#tanggalProduk').val(data.tanggal); // Format sudah dd/mm/yyyy
+                    $('#tanggalProduk').val(data.tanggal);
                     $('#hargaProduk').val(data.harga);
                     $('#satuanProduk').val(data.satuan);
                     $('#stokProduk').val(data.stok);
@@ -721,92 +744,123 @@
                     alert('Deskripsi: ' + deskripsi);
                 })
 
-                $('.modal-footer .btn-success').on('click', () => {
-                    const itemsProduk = $('#itemsProduk').val();
-                    const supplierProduk = $('#supplierProduk').val();
-                    const kotaProduk = $('#kotaProduk').val();
-                    const gudangProduk = $('#gudangProduk').val();
-                    const tanggalProduk = $('#tanggalProduk').val();
-                    const hargaProduk = $('#hargaProduk').val();
-                    const satuanProduk = $('#satuanProduk').val();
-                    const stokProduk = $('#stokProduk').val();
-                    const deskripsiProduk = $('#deskripsiProduk').val();
-                    const idProduk = $('#idProduk').val();
+                // Event handler dengan optimasi
+                $('#btnSimpan').on('click', function() {
+                    // Prevent double submission
+                    if (isSaving) return;
+                    
+                    const $btn = $(this);
+                    const $spinner = $btn.find('.spinner-border');
+                    const $text = $btn.find('.btn-text');
+                    
+                    // Get values (cached)
+                    const formData = {
+                        items: $('#itemsProduk').val().trim(),
+                        supplier: $('#supplierProduk').val().trim(),
+                        kota: $('#kotaProduk').val().trim(),
+                        gudang: $('#gudangProduk').val(),
+                        tanggal: $('#tanggalProduk').val().trim(),
+                        harga: $('#hargaProduk').val().trim(),
+                        satuan: $('#satuanProduk').val(),
+                        stok: $('#stokProduk').val().trim(),
+                        deskripsi: $('#deskripsiProduk').val().trim(),
+                        id: $('#idProduk').val()
+                    };
 
-                    // Validasi field wajib
-                    if (itemsProduk == '' || supplierProduk == '' || kotaProduk == '' || gudangProduk == '' || tanggalProduk == '' || hargaProduk == '' || satuanProduk == '' || stokProduk == '') {
-                        alert('Harap lengkapi semua field !');
+                    // Validasi cepat
+                    if (!formData.items || !formData.supplier || !formData.kota || !formData.gudang || 
+                        !formData.tanggal || !formData.harga || !formData.satuan || !formData.stok) {
+                        alert('Harap lengkapi semua field!');
                         return;
                     }
 
                     // Validasi format tanggal
-                    if (!isValidTanggal(tanggalProduk)) {
+                    if (!isValidTanggal(formData.tanggal)) {
                         $('#tanggalProduk').addClass('is-invalid');
-                        $('#tanggalError').text('Format tanggal harus dd/mm/yyyy (contoh: 25/12/2025)');
+                        $('#tanggalError').text('Format tanggal harus dd/mm/yyyy');
                         return;
                     }
 
                     $('#tanggalProduk').removeClass('is-invalid');
-
-                    // Bangun URL dengan encodeURIComponent untuk semua parameter
-                    let apiUrl = BASE_URL;
                     
-                    if (idProduk) {
-                        // Untuk update
-                        apiUrl += '?action=update' +
-                                '&items=' + encodeURLParam(itemsProduk) +
-                                '&supplier=' + encodeURLParam(supplierProduk) +
-                                '&kota=' + encodeURLParam(kotaProduk) +
-                                '&gudang=' + encodeURLParam(gudangProduk) +
-                                '&tanggal=' + encodeURLParam(tanggalProduk) +
-                                '&harga=' + encodeURLParam(hargaProduk) +
-                                '&satuan=' + encodeURLParam(satuanProduk) +
-                                '&stok=' + encodeURLParam(stokProduk) +
-                                '&deskripsi=' + encodeURLParam(deskripsiProduk) +
-                                '&id=' + encodeURLParam(idProduk);
-                    } else {
-                        // Untuk insert
-                        apiUrl += '?action=insert' +
-                                '&items=' + encodeURLParam(itemsProduk) +
-                                '&supplier=' + encodeURLParam(supplierProduk) +
-                                '&kota=' + encodeURLParam(kotaProduk) +
-                                '&gudang=' + encodeURLParam(gudangProduk) +
-                                '&tanggal=' + encodeURLParam(tanggalProduk) +
-                                '&harga=' + encodeURLParam(hargaProduk) +
-                                '&satuan=' + encodeURLParam(satuanProduk) +
-                                '&stok=' + encodeURLParam(stokProduk) +
-                                '&deskripsi=' + encodeURLParam(deskripsiProduk);
+                    // Set loading state
+                    isSaving = true;
+                    $btn.prop('disabled', true);
+                    $text.addClass('d-none');
+                    $spinner.removeClass('d-none');
+
+                    // Build URL dengan parameter yang sudah di-encode
+                    const action = formData.id ? 'update' : 'insert';
+                    const params = new URLSearchParams({
+                        action: action,
+                        items: formData.items,
+                        supplier: formData.supplier,
+                        kota: formData.kota,
+                        gudang: formData.gudang,
+                        tanggal: formData.tanggal,
+                        harga: formData.harga,
+                        satuan: formData.satuan,
+                        stok: formData.stok,
+                        deskripsi: formData.deskripsi
+                    });
+                    
+                    if (formData.id) {
+                        params.append('id', formData.id);
                     }
 
-                    // Kirim permintaan dengan GET
-                    $.getJSON(apiUrl, function(result) {
-                        if (result.success) {
-                            alert(result.message);
-                            $('#myModal').modal('hide');
-                            table.ajax.reload(null, false);
-                            clear();
-                        } else {
-                            alert('Error: ' + result.message);
+                    const apiUrl = BASE_URL + '?' + params.toString();
+
+                    // Kirim request dengan timeout
+                    $.ajax({
+                        url: apiUrl,
+                        method: 'GET',
+                        dataType: 'json',
+                        timeout: 15000, // 15 detik timeout
+                        success: function(result) {
+                            if (result.success) {
+                                // Tutup modal terlebih dahulu untuk feedback lebih cepat
+                                $('#myModal').modal('hide');
+                                
+                                // Reload table di background
+                                table.ajax.reload(null, false);
+                                
+                                // Clear form
+                                clear();
+                                
+                                // Alert setelah modal tertutup
+                                setTimeout(() => {
+                                    alert(result.message);
+                                }, 300);
+                            } else {
+                                alert('Error: ' + result.message);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error('Request failed:', textStatus, errorThrown);
+                            alert('Gagal menyimpan data. Silakan coba lagi.');
+                        },
+                        complete: function() {
+                            // Reset loading state
+                            isSaving = false;
+                            $btn.prop('disabled', false);
+                            $text.removeClass('d-none');
+                            $spinner.addClass('d-none');
                         }
-                    }).fail(function(jqXHR, textStatus, errorThrown) {
-                        console.error('Request failed:', textStatus, errorThrown);
-                        console.log('URL yang dikirim:', apiUrl);
-                        alert('Gagal menyimpan data. Periksa koneksi internet Anda.');
                     });
+                });
+                
+                // Shortcut: Enter untuk submit (opsional)
+                $('#productForm').on('keypress', function(e) {
+                    if (e.which === 13 && e.target.tagName !== 'TEXTAREA') {
+                        e.preventDefault();
+                        $('#btnSimpan').click();
+                    }
                 });
             });
 
             function clear() {
+                $('#productForm')[0].reset();
                 $('#idProduk').val('');
-                $('#itemsProduk').val('');
-                $('#supplierProduk').val('');
-                $('#kotaProduk').val('');
-                $('#gudangProduk').val('');
-                $('#tanggalProduk').val('');
-                $('#hargaProduk').val('');
-                $('#satuanProduk').val('');
-                $('#stokProduk').val('');
-                $('#deskripsiProduk').val('');
                 $('#tanggalProduk').removeClass('is-invalid');
             }
         </script>
