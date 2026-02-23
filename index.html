@@ -1,868 +1,1413 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.css"/>
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.3.1/css/fixedHeader.bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.0/css/responsive.bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-        <title>DailyNota - Optimized</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                padding: 20px 0;
-            }
-
-            .main-container {
-                background: white;
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                padding: 20px;
-                margin: 0 auto;
-                max-width: 1400px;
-                width: 95%;
-            }
-
-            .page-title {
-                font-size: 2rem;
-                font-weight: 700;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                margin-bottom: 20px;
-                text-align: center;
-            }
-
-            .version-info {
-                text-align: center;
-                font-size: 0.75rem;
-                color: #999;
-                margin-bottom: 15px;
-                font-weight: 500;
-            }
-
-            .btn-add {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none;
-                padding: 8px 16px;
-                border-radius: 10px;
-                color: white;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-                width: auto;
-                margin-bottom: 15px;
-                order: 0;
-                font-size: 0.9rem;
-            }
-
-            .btn-add:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-                color: white;
-            }
-
-            .table-wrapper {
-                background: white;
-                border-radius: 15px;
-                padding: 0;
-                margin-top: 15px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-                overflow-x: auto;
-                display: flex;
-                flex-direction: column;
-            }
-
-            #table_data {
-                border-radius: 10px;
-                overflow: hidden;
-                margin-bottom: 0;
-                order: 3;
-            }
-
-            #table_data thead {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-            }
-
-            #table_data thead th {
-                border: none;
-                padding: 12px 8px;
-                font-weight: 600;
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.5px;
-                white-space: nowrap;
-                text-align: center;
-            }
-
-            #table_data tbody tr {
-                transition: all 0.3s ease;
-            }
-
-            #table_data tbody tr:hover {
-                background-color: #f8f9ff;
-            }
-
-            #table_data tbody td {
-                padding: 10px 8px;
-                vertical-align: middle;
-                font-size: 0.9rem;
-            }
-
-            .btn-circle {
-                border: none;
-                border-radius: 50%;
-                width: 25px;
-                height: 25px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-                font-size: 0.75rem;
-                margin: 0 3px;
-                color: white;
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-                cursor: pointer;
-                border: 2px solid transparent;
-            }
-
-            .btn-circle:hover {
-                transform: translateY(-2px) scale(1.1);
-            }
-
-            .btn-edit {
-                background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
-                color: #333;
-            }
-
-            .btn-edit:hover {
-                box-shadow: 0 5px 15px rgba(255, 193, 7, 0.5);
-            }
-
-            .btn-view {
-                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-                color: white;
-            }
-
-            .btn-view:hover {
-                box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
-            }
-
-            .action-buttons {
-                display: flex;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .modal-dialog {
-                max-width: 400px;
-            }
-
-            .modal-header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border-radius: 20px 20px 0 0;
-                padding: 12px 16px;
-                border: none;
-            }
-
-            .modal-header .modal-title {
-                font-weight: 700;
-                font-size: 1rem;
-            }
-
-            .modal-header .btn-close {
-                filter: brightness(0) invert(1);
-            }
-
-            .modal-body {
-                padding: 15px;
-            }
-
-            .modal-body .form-label {
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 4px;
-                font-size: 0.85rem;
-            }
-
-            .modal-body .form-control,
-            .modal-body .form-select {
-                border: 2px solid #e0e0e0;
-                border-radius: 10px;
-                padding: 8px 10px;
-                transition: all 0.3s ease;
-                font-size: 0.9rem;
-            }
-
-            .modal-body .form-control:focus,
-            .modal-body .form-select:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            }
-
-            .form-control.is-invalid {
-                border-color: #dc3545;
-            }
-
-            .invalid-feedback {
-                color: #dc3545;
-                font-size: 0.85rem;
-                margin-top: 2px;
-                display: block;
-            }
-
-            .mb-3 {
-                margin-bottom: 10px !important;
-            }
-
-            .modal-footer {
-                border: none;
-                padding: 12px 15px;
-                gap: 10px;
-            }
-
-            .modal-footer .btn-success {
-                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-                border: none;
-                padding: 10px 25px;
-                border-radius: 10px;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                flex: 1;
-                font-size: 0.9rem;
-                color: white;
-            }
-
-            .modal-footer .btn-success:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-            }
-
-            .modal-footer .btn-success:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-            .modal-footer .btn-secondary {
-                flex: 1;
-            }
-
-            /* Loading spinner */
-            .spinner-border-sm {
-                width: 1rem;
-                height: 1rem;
-                border-width: 0.15em;
-            }
-
-            .dataTables_wrapper {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .dataTables_wrapper .dataTables_filter {
-                text-align: right;
-                margin-bottom: 15px;
-                padding: 0;
-            }
-
-            .dataTables_wrapper .dataTables_filter label {
-                display: inline-flex;
-                align-items: center;
-                gap: 10px;
-                font-weight: 600;
-                color: #667eea;
-                font-size: 0.9rem;
-            }
-
-            .dataTables_wrapper .dataTables_filter input {
-                border: 2px solid #e0e0e0;
-                border-radius: 12px;
-                padding: 10px 15px;
-                margin-left: 0;
-                width: 250px;
-                transition: all 0.3s ease;
-                background: #f8f9ff;
-                font-size: 0.95rem;
-            }
-
-            .dataTables_wrapper .dataTables_filter input:focus {
-                outline: none;
-                border-color: #667eea;
-                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-                background: white;
-            }
-
-            .dataTables_wrapper .dataTables_filter input::placeholder {
-                color: #999;
-            }
-
-            .dataTables_wrapper .dataTables_length {
-                float: none;
-                margin-bottom: 0;
-                padding: 0;
-                order: 2;
-            }
-
-            .dataTables_wrapper .dataTables_length label {
-                display: inline-flex;
-                align-items: center;
-                gap: 10px;
-                font-weight: 600;
-                color: #667eea;
-                font-size: 0.9rem;
-                margin: 0;
-            }
-
-            .dataTables_wrapper .dataTables_length select {
-                border: 2px solid #e0e0e0;
-                border-radius: 10px;
-                padding: 8px 12px;
-                background: #f8f9ff;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                font-size: 0.95rem;
-            }
-
-            .dataTables_wrapper .dataTables_length select:focus {
-                outline: none;
-                border-color: #667eea;
-                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-                background: white;
-            }
-
-            .dataTables_wrapper .dataTables_info {
-                padding: 10px;
-                font-size: 0.85rem;
-                color: #666;
-                font-weight: 500;
-                order: 4;
-            }
-
-            .dataTables_wrapper .dataTables_paginate {
-                padding: 10px;
-                order: 5;
-                display: flex;
-                justify-content: flex-end;
-                gap: 5px;
-                flex-wrap: wrap;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button {
-                padding: 6px 8px !important;
-                border-radius: 4px !important;
-                margin: 0 1px !important;
-                font-size: 0.85rem !important;
-                font-weight: 500 !important;
-                color: #333 !important;
-                background: transparent !important;
-                border: none !important;
-                cursor: pointer !important;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                border: none !important;
-                color: white !important;
-                border-radius: 4px;
-                font-weight: 700 !important;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                border: none !important;
-                color: white !important;
-                border-radius: 4px;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
-                color: #999 !important;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.previous {
-                border: none !important;
-                background: transparent !important;
-                padding: 0 6px !important;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.previous span.dt-prev {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 28px;
-                height: 28px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: #fff;
-                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
-                font-weight: 700;
-                line-height: 1;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover {
-                background: transparent !important;
-            }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button.previous:active span.dt-prev {
-                transform: translateY(1px);
-            }
-
-            @media (max-width: 768px) {
-                .main-container {
-                    padding: 15px;
-                    width: 100%;
-                    border-radius: 15px;
-                }
-
-                .page-title {
-                    font-size: 1.5rem;
-                    margin-bottom: 15px;
-                }
-
-                .btn-add {
-                    padding: 10px 15px;
-                    font-size: 0.95rem;
-                }
-
-                .table-wrapper {
-                    padding: 10px;
-                }
-
-                #table_data thead th {
-                    padding: 8px 5px;
-                    font-size: 0.7rem;
-                }
-
-                #table_data tbody td {
-                    padding: 8px 5px;
-                    font-size: 0.8rem;
-                }
-
-                .btn-circle {
-                    width: 36px;
-                    height: 36px;
-                    font-size: 0.95rem;
-                    margin: 0 2px;
-                }
-
-                .action-buttons {
-                    gap: 5px;
-                }
-            }
-
-            @media (max-width: 576px) {
-                body {
-                    padding: 10px 0;
-                }
-
-                .main-container {
-                    padding: 12px;
-                    margin: 0 auto;
-                }
-
-                .page-title {
-                    font-size: 1.3rem;
-                }
-
-                #table_data thead th {
-                    padding: 6px 3px;
-                    font-size: 0.65rem;
-                }
-
-                #table_data tbody td {
-                    padding: 6px 3px;
-                    font-size: 0.75rem;
-                }
-
-                .btn-circle {
-                    width: 34px;
-                    height: 34px;
-                    font-size: 0.9rem;
-                    margin: 0 1px;
-                }
-
-                .action-buttons {
-                    gap: 3px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="main-container">
-                <h1 class="page-title">DailyNota</h1>
-                <div class="version-info">v2.1 Optimized © 2025</div>
-                
-                <button type="button" class="btn btn-add" id="tambahProduk">
-                    + Tambah Produk
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>DailyNota — Catatan Harian & Transaksi</title>
+
+  <!-- Google Fonts (distinct, non-system) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Brand */
+      --bg0:#0b1020;
+      --bg1:#0e1530;
+      --paper:#0f1634;
+      --paper2:#121b41;
+
+      --ink:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+      --faint:rgba(234,240,255,.18);
+
+      --accent:#7c5cff;   /* violet */
+      --accent2:#2de2e6;  /* cyan */
+      --good:#2bd576;
+      --warn:#ffcc66;
+      --bad:#ff5470;
+
+      --shadow: 0 20px 70px rgba(0,0,0,.55);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+
+      --radius-xl: 22px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 12px;
+
+      --ring: 0 0 0 4px rgba(124,92,255,.22);
+      --ring2: 0 0 0 4px rgba(45,226,230,.18);
+
+      --grid-gap: clamp(14px, 1.8vw, 22px);
+      --max: 1180px;
+
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(45,226,230,.25), transparent 55%),
+        radial-gradient(900px 800px at 60% 90%, rgba(255,84,112,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* Subtle grain */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.35;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    button, input, select, textarea{ font:inherit; color:inherit; }
+    ::selection{ background: rgba(124,92,255,.35); }
+
+    .wrap{
+      width:min(var(--max), calc(100% - 28px));
+      margin: 18px auto 40px;
+    }
+
+    /* Topbar */
+    header{
+      position: sticky;
+      top: 12px;
+      z-index: 30;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 14px 14px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 220px;
+    }
+    .logo{
+      width: 38px; height: 38px;
+      border-radius: 14px;
+      background:
+        radial-gradient(12px 12px at 30% 35%, rgba(255,255,255,.95), rgba(255,255,255,0) 60%),
+        conic-gradient(from 210deg, var(--accent), var(--accent2), #ff5470, var(--accent));
+      box-shadow: 0 12px 26px rgba(124,92,255,.25);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-20%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 55%);
+      transform: rotate(15deg);
+    }
+    .brand h1{
+      margin:0;
+      font-family: Fraunces, ui-serif, Georgia, serif;
+      font-size: 18px;
+      letter-spacing: .2px;
+      line-height: 1.05;
+    }
+    .brand p{
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .18px;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 9px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      color: var(--muted);
+      font-size: 12.5px;
+      letter-spacing: .1px;
+      white-space: nowrap;
+    }
+    .chip strong{ color: var(--ink); font-weight: 700; }
+
+    .iconbtn{
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition: transform .18s var(--ease), background .18s var(--ease), border-color .18s var(--ease);
+    }
+    .iconbtn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.18);
+    }
+    .iconbtn:active{ transform: translateY(0px) scale(.98); }
+    .iconbtn:focus-visible{ outline:none; box-shadow: var(--ring); }
+
+    .primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(120px 60px at 20% 20%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,226,230,.85));
+      color: #071022;
+      font-weight: 800;
+      letter-spacing: .2px;
+      cursor:pointer;
+      transition: transform .18s var(--ease), filter .18s var(--ease), box-shadow .18s var(--ease);
+      box-shadow: 0 18px 40px rgba(124,92,255,.25);
+    }
+    .primary:hover{ transform: translateY(-1px); filter: saturate(1.08) contrast(1.05); }
+    .primary:active{ transform: translateY(0px) scale(.99); }
+    .primary:focus-visible{ outline:none; box-shadow: var(--ring), 0 18px 40px rgba(124,92,255,.25); }
+
+    /* Main layout */
+    main{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: var(--grid-gap);
+      align-items:start;
+    }
+
+    @media (max-width: 980px){
+      main{ grid-template-columns: 1fr; }
+      header{ position: static; }
+      .brand{ min-width: unset; }
+      .topbar{ padding: 12px; }
+    }
+
+    /* Panel */
+    .panel{
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .panel-header{
+      padding: 16px 16px 12px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(800px 140px at 20% 0%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(700px 160px at 80% 0%, rgba(45,226,230,.16), transparent 62%);
+    }
+
+    .panel-title{
+      margin:0;
+      font-family: Fraunces, ui-serif, Georgia, serif;
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .panel-sub{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+      max-width: 62ch;
+    }
+
+    .tools{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .field{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,14,33,.45);
+      min-width: min(420px, 100%);
+    }
+    .field svg{ opacity:.9; }
+    .field input{
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: .15px;
+    }
+    .field input::placeholder{ color: rgba(234,240,255,.55); font-weight: 500; }
+
+    .select{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,14,33,.45);
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline: none;
+      font-weight: 700;
+      letter-spacing: .1px;
+      cursor:pointer;
+      transition: box-shadow .18s var(--ease), border-color .18s var(--ease);
+    }
+    .select:focus-visible{ box-shadow: var(--ring2); border-color: rgba(45,226,230,.45); }
+
+    /* Table */
+    .table-wrap{
+      padding: 0;
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 820px;
+    }
+
+    thead th{
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      color: rgba(234,240,255,.85);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: .18em;
+      padding: 14px 14px;
+      text-align:left;
+      white-space: nowrap;
+    }
+
+    tbody td{
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      vertical-align: middle;
+      color: rgba(234,240,255,.92);
+      font-size: 13.5px;
+    }
+
+    tbody tr{
+      transition: background .16s var(--ease), transform .16s var(--ease);
+    }
+    tbody tr:hover{
+      background: rgba(255,255,255,.05);
+    }
+
+    .mono{
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1, "ss01" 1;
+      letter-spacing: .2px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12px;
+      white-space: nowrap;
+    }
+    .dot{ width: 9px; height: 9px; border-radius: 999px; background: rgba(255,255,255,.35); box-shadow: 0 0 0 3px rgba(255,255,255,.06); }
+    .tag.good{ border-color: rgba(43,213,118,.30); background: rgba(43,213,118,.10); }
+    .tag.good .dot{ background: var(--good); box-shadow: 0 0 0 3px rgba(43,213,118,.14); }
+    .tag.warn{ border-color: rgba(255,204,102,.32); background: rgba(255,204,102,.10); }
+    .tag.warn .dot{ background: var(--warn); box-shadow: 0 0 0 3px rgba(255,204,102,.14); }
+    .tag.bad{ border-color: rgba(255,84,112,.34); background: rgba(255,84,112,.10); }
+    .tag.bad .dot{ background: var(--bad); box-shadow: 0 0 0 3px rgba(255,84,112,.14); }
+
+    .actions{
+      display:flex;
+      gap: 8px;
+      justify-content:flex-end;
+      flex-wrap: wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+      transition: transform .16s var(--ease), background .16s var(--ease), border-color .16s var(--ease);
+      font-weight: 800;
+      font-size: 12.5px;
+      letter-spacing: .1px;
+    }
+    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .pill:active{ transform: translateY(0px) scale(.99); }
+    .pill:focus-visible{ outline:none; box-shadow: var(--ring); }
+
+    .pill svg{ opacity:.9; }
+    .pill.view{ border-color: rgba(45,226,230,.22); }
+    .pill.edit{ border-color: rgba(255,204,102,.24); }
+    .pill.del{ border-color: rgba(255,84,112,.25); }
+
+    /* Sidebar */
+    .side{
+      display:flex;
+      flex-direction:column;
+      gap: var(--grid-gap);
+    }
+
+    .statgrid{
+      padding: 16px;
+      display:grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat{
+      border-radius: 18px;
+      padding: 14px 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(140px 90px at 20% 20%, rgba(124,92,255,.18), transparent 60%),
+        rgba(255,255,255,.05);
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    }
+    .stat:nth-child(2){
+      background:
+        radial-gradient(140px 90px at 20% 20%, rgba(45,226,230,.18), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .stat:nth-child(3){
+      background:
+        radial-gradient(140px 90px at 20% 20%, rgba(43,213,118,.14), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .stat:nth-child(4){
+      background:
+        radial-gradient(140px 90px at 20% 20%, rgba(255,84,112,.14), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .stat .k{
+      color: rgba(234,240,255,.70);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+    .stat .v{
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat .s{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .quick{
+      padding: 16px;
+    }
+    .quick h3{
+      margin: 0;
+      font-family: Fraunces, ui-serif, Georgia, serif;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .quick p{
+      margin: 8px 0 12px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .quick .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ghost{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      font-weight: 850;
+      font-size: 12.5px;
+      letter-spacing:.1px;
+      transition: transform .16s var(--ease), background .16s var(--ease), border-color .16s var(--ease);
+    }
+    .ghost:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.20); }
+    .ghost:focus-visible{ outline:none; box-shadow: var(--ring2); }
+
+    /* Footer */
+    footer{
+      margin-top: 18px;
+      padding: 14px 6px 0;
+      color: rgba(234,240,255,.55);
+      font-size: 12.5px;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Modal */
+    dialog{
+      width: min(680px, calc(100% - 18px));
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 22px;
+      padding: 0;
+      background:
+        radial-gradient(900px 240px at 20% 0%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(820px 260px at 80% 0%, rgba(45,226,230,.14), transparent 62%),
+        rgba(10,14,33,.85);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    dialog::backdrop{
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+    }
+    .modal-head{
+      padding: 16px 16px 12px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .modal-head h2{
+      margin:0;
+      font-family: Fraunces, ui-serif, Georgia, serif;
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .modal-head p{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .modal-body{
+      padding: 14px 16px 16px;
+    }
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form .full{ grid-column: 1 / -1; }
+    @media (max-width: 680px){
+      .form{ grid-template-columns: 1fr; }
+    }
+
+    .control label{
+      display:block;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(234,240,255,.70);
+      margin: 0 0 8px;
+      font-weight: 800;
+    }
+    .control input, .control select, .control textarea{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      padding: 11px 12px;
+      outline:none;
+      color: var(--ink);
+      font-weight: 650;
+      letter-spacing: .12px;
+      transition: box-shadow .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+    }
+    .control textarea{ min-height: 92px; resize: vertical; }
+    .control input:focus, .control select:focus, .control textarea:focus{
+      box-shadow: var(--ring);
+      border-color: rgba(124,92,255,.45);
+      background: rgba(255,255,255,.06);
+    }
+    .hint{
+      margin: 8px 0 0;
+      color: rgba(234,240,255,.58);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+    .error{
+      margin: 8px 0 0;
+      color: rgba(255,84,112,.95);
+      font-size: 12.5px;
+      display:none;
+      font-weight: 750;
+    }
+    .control[data-invalid="true"] .error{ display:block; }
+    .control[data-invalid="true"] input,
+    .control[data-invalid="true"] select,
+    .control[data-invalid="true"] textarea{
+      border-color: rgba(255,84,112,.55);
+      box-shadow: 0 0 0 4px rgba(255,84,112,.14);
+    }
+
+    .modal-foot{
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      flex-wrap: wrap;
+    }
+    .danger{
+      background: rgba(255,84,112,.10);
+      border-color: rgba(255,84,112,.26);
+      color: var(--ink);
+    }
+
+    /* Animations (stagger reveal) */
+    [data-reveal]{
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .revealed{
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      transition: opacity .6s var(--ease), transform .6s var(--ease);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header aria-label="Header aplikasi">
+      <div class="topbar" data-reveal>
+        <div class="brand" aria-label="Brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>DailyNota</h1>
+            <p>Catatan harian transaksi • cepat, rapi, bisa diekspor</p>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <div class="chip" title="Periode aktif">
+            Periode: <strong id="periodLabel">Bulan ini</strong>
+          </div>
+
+          <button class="iconbtn" id="themeBtn" type="button" aria-label="Toggle kontras">
+            <!-- sun/moon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3a7 7 0 1 0 9.8 9.8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <button class="primary" id="addBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
+            Tambah Nota
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Main panel: table -->
+      <section class="panel" aria-label="Daftar nota" data-reveal>
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Daftar Nota</h2>
+            <p class="panel-sub">
+              Cari cepat, urutkan, edit, dan ekspor. Ini versi mandiri (tanpa Bootstrap/DataTables) supaya stabil dan mudah dipasang di mana saja.
+            </p>
+          </div>
+
+          <div class="tools" aria-label="Perkakas tabel">
+            <div class="field" role="search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M21 21l-4.3-4.3m1.8-5.2a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <input id="q" type="search" placeholder="Cari: nama, catatan, status, nominal…" autocomplete="off" />
+            </div>
+
+            <select class="select" id="range" aria-label="Filter periode">
+              <option value="month" selected>Bulan ini</option>
+              <option value="week">7 hari</option>
+              <option value="all">Semua</option>
+            </select>
+
+            <select class="select" id="pageSize" aria-label="Jumlah baris per halaman">
+              <option value="6">6/hal</option>
+              <option value="10" selected>10/hal</option>
+              <option value="20">20/hal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap" aria-label="Tabel nota">
+          <table id="notaTable">
+            <thead>
+              <tr>
+                <th style="width:110px">Tanggal</th>
+                <th>Nama</th>
+                <th style="width:160px">Kategori</th>
+                <th style="width:140px">Nominal</th>
+                <th style="width:160px">Status</th>
+                <th style="width:220px; text-align:right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="side" aria-label="Ringkasan" data-reveal>
+        <section class="panel" aria-label="Statistik">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Ringkasan</h2>
+              <p class="panel-sub">Gambaran cepat untuk periode yang dipilih.</p>
+            </div>
+            <button class="iconbtn" id="refreshBtn" type="button" aria-label="Refresh ringkasan">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="statgrid">
+            <div class="stat">
+              <p class="k">Total Nota</p>
+              <p class="v" id="statCount">0</p>
+              <p class="s">Jumlah transaksi dalam periode.</p>
+            </div>
+            <div class="stat">
+              <p class="k">Masuk</p>
+              <p class="v mono" id="statIn">Rp 0</p>
+              <p class="s">Pendapatan/uang masuk.</p>
+            </div>
+            <div class="stat">
+              <p class="k">Keluar</p>
+              <p class="v mono" id="statOut">Rp 0</p>
+              <p class="s">Pengeluaran/uang keluar.</p>
+            </div>
+            <div class="stat">
+              <p class="k">Saldo</p>
+              <p class="v mono" id="statNet">Rp 0</p>
+              <p class="s">Masuk dikurangi keluar.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel quick" aria-label="Aksi cepat">
+          <h3>Ekspor & Utilitas</h3>
+          <p>Unduh CSV untuk laporan, atau bersihkan data demo.</p>
+          <div class="row">
+            <button class="ghost" id="exportCsv" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v12m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+              Ekspor CSV
+            </button>
+            <button class="ghost danger" id="resetDemo" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 6h18M8 6V4h8v2m-1 0v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+              Reset Demo
+            </button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer aria-label="Footer">
+      <span class="mono">DailyNota v2 • UI mandiri • offline-ready (LocalStorage)</span>
+      <span>Tip: klik header kolom untuk mengurutkan.</span>
+    </footer>
+  </div>
+
+  <!-- Modal: Add/Edit -->
+  <dialog id="notaModal" aria-label="Form nota">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">Tambah Nota</h2>
+        <p id="modalDesc">Isi detail transaksi. Kolom wajib: tanggal, nama, kategori, nominal, tipe.</p>
+      </div>
+      <button class="iconbtn" id="closeModal" type="button" aria-label="Tutup modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="modal-body" id="notaForm" method="dialog">
+      <input type="hidden" id="notaId" value="" />
+
+      <div class="form">
+        <div class="control">
+          <label for="date">Tanggal</label>
+          <input id="date" type="date" required />
+          <div class="error">Tanggal wajib diisi.</div>
+        </div>
+
+        <div class="control">
+          <label for="type">Tipe</label>
+          <select id="type" required>
+            <option value="in">Masuk</option>
+            <option value="out">Keluar</option>
+          </select>
+          <div class="error">Tipe wajib dipilih.</div>
+        </div>
+
+        <div class="control full">
+          <label for="name">Nama / Deskripsi</label>
+          <input id="name" type="text" placeholder="Contoh: Penjualan harian / Beli bahan" required maxlength="60" />
+          <div class="hint">Maks 60 karakter.</div>
+          <div class="error">Nama wajib diisi.</div>
+        </div>
+
+        <div class="control">
+          <label for="category">Kategori</label>
+          <select id="category" required>
+            <option value="Penjualan">Penjualan</option>
+            <option value="Operasional">Operasional</option>
+            <option value="Logistik">Logistik</option>
+            <option value="Gaji">Gaji</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+          <div class="error">Kategori wajib dipilih.</div>
+        </div>
+
+        <div class="control">
+          <label for="amount">Nominal (Rp)</label>
+          <input id="amount" type="text" inputmode="numeric" placeholder="contoh: 125000" required />
+          <div class="hint">Angka saja, tanpa titik/koma (boleh otomatis diformat saat simpan).</div>
+          <div class="error">Nominal wajib diisi dan harus &gt; 0.</div>
+        </div>
+
+        <div class="control full">
+          <label for="note">Catatan</label>
+          <textarea id="note" placeholder="Opsional: metode bayar, nomor invoice, dll."></textarea>
+          <div class="hint">Catatan tidak wajib.</div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="ghost" id="cancelBtn" type="button">Batal</button>
+        <button class="primary" id="saveBtn" type="submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Simpan
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: View -->
+  <dialog id="viewModal" aria-label="Detail nota">
+    <div class="modal-head">
+      <div>
+        <h2>Detail Nota</h2>
+        <p>Ringkas, siap dicopy ke laporan.</p>
+      </div>
+      <button class="iconbtn" id="closeView" type="button" aria-label="Tutup detail">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="viewContent" class="panel" style="border-radius:18px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); box-shadow:none;">
+        <div style="padding:14px 14px 6px; display:grid; gap:10px;">
+          <div class="chip"><span style="opacity:.85">Tanggal:</span> <strong class="mono" id="vDate">—</strong></div>
+          <div class="chip"><span style="opacity:.85">Nama:</span> <strong id="vName">—</strong></div>
+          <div class="chip"><span style="opacity:.85">Kategori:</span> <strong id="vCategory">—</strong></div>
+          <div class="chip"><span style="opacity:.85">Tipe:</span> <strong id="vType">—</strong></div>
+          <div class="chip"><span style="opacity:.85">Nominal:</span> <strong class="mono" id="vAmount">—</strong></div>
+          <div class="chip"><span style="opacity:.85">Catatan:</span> <strong id="vNote">—</strong></div>
+        </div>
+      </div>
+      <div class="modal-foot" style="justify-content:space-between;">
+        <button class="ghost" id="copyDetail" type="button">Copy Ringkas</button>
+        <button class="primary" id="editFromView" type="button">Edit</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // -------- Utilities --------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+    const storeKey = "dailynota:v2";
+
+    const fmtIDR = (n) => new Intl.NumberFormat("id-ID", { style:"currency", currency:"IDR", maximumFractionDigits:0 }).format(n || 0);
+    const toISO = (d) => new Date(d).toISOString().slice(0,10);
+    const todayISO = () => toISO(new Date());
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+    function uid(){
+      return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+    }
+
+    function safeNumberFromText(s){
+      if (!s) return 0;
+      const cleaned = String(s).replace(/[^\d]/g,"");
+      return cleaned ? Number(cleaned) : 0;
+    }
+
+    function statusFromRow(r){
+      // Simple deterministic status
+      // paid if note contains "lunas"/"paid", pending if amount >= 500k and no paid marker
+      const note = (r.note || "").toLowerCase();
+      if (note.includes("lunas") || note.includes("paid")) return "Paid";
+      if (r.amount >= 500000 && r.type === "out") return "Pending";
+      return "OK";
+    }
+
+    function tagHTML(status){
+      const s = String(status || "OK").toLowerCase();
+      let cls = "good", label = "OK";
+      if (s.includes("pending")) { cls = "warn"; label = "Pending"; }
+      if (s.includes("paid")) { cls = "good"; label = "Paid"; }
+      if (s.includes("void") || s.includes("batal")) { cls = "bad"; label = "Void"; }
+      return `<span class="tag ${cls}"><span class="dot"></span>${label}</span>`;
+    }
+
+    function withinRange(dateISO, range){
+      const d = new Date(dateISO + "T00:00:00");
+      const now = new Date();
+      const start = new Date(now);
+      if (range === "all") return true;
+      if (range === "week") start.setDate(now.getDate() - 7);
+      if (range === "month") start.setDate(now.getDate() - 30);
+      return d >= start && d <= now;
+    }
+
+    // -------- Data Layer (LocalStorage) --------
+    function loadData(){
+      const raw = localStorage.getItem(storeKey);
+      if (raw){
+        try{
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }catch(e){}
+      }
+      // Seed demo
+      const seed = [
+        { id: uid(), date: todayISO(), type:"in",  name:"Penjualan shift pagi", category:"Penjualan", amount: 825000, note:"QRIS • paid" },
+        { id: uid(), date: todayISO(), type:"out", name:"Beli bahan dapur",      category:"Operasional", amount: 245000, note:"Sayur, ayam, bumbu" },
+        { id: uid(), date: todayISO(), type:"out", name:"Ongkir supplier",      category:"Logistik", amount: 55000,  note:"Transfer" },
+        { id: uid(), date: toISO(Date.now()-86400000*2), type:"in",  name:"Penjualan akhir pekan", category:"Penjualan", amount: 1325000, note:"Tunai • lunas" },
+        { id: uid(), date: toISO(Date.now()-86400000*9), type:"out", name:"Perbaikan alat",        category:"Operasional", amount: 620000, note:"Pending invoice" },
+        { id: uid(), date: toISO(Date.now()-86400000*18), type:"out", name:"Gaji mingguan",        category:"Gaji", amount: 900000, note:"paid" },
+      ];
+      localStorage.setItem(storeKey, JSON.stringify(seed));
+      return seed;
+    }
+
+    function saveData(list){
+      localStorage.setItem(storeKey, JSON.stringify(list));
+    }
+
+    // -------- State --------
+    let rows = loadData();
+    let sort = { key: "date", dir: "desc" };
+    let page = 1;
+
+    // -------- DOM refs --------
+    const tbody = $("#tbody");
+    const q = $("#q");
+    const rangeSel = $("#range");
+    const pageSizeSel = $("#pageSize");
+    const periodLabel = $("#periodLabel");
+
+    const statCount = $("#statCount");
+    const statIn = $("#statIn");
+    const statOut = $("#statOut");
+    const statNet = $("#statNet");
+
+    // modals
+    const notaModal = $("#notaModal");
+    const viewModal = $("#viewModal");
+
+    // form fields
+    const notaForm = $("#notaForm");
+    const notaId = $("#notaId");
+    const fDate = $("#date");
+    const fType = $("#type");
+    const fName = $("#name");
+    const fCategory = $("#category");
+    const fAmount = $("#amount");
+    const fNote = $("#note");
+    const modalTitle = $("#modalTitle");
+
+    // view fields
+    const vDate = $("#vDate");
+    const vName = $("#vName");
+    const vCategory = $("#vCategory");
+    const vType = $("#vType");
+    const vAmount = $("#vAmount");
+    const vNote = $("#vNote");
+
+    let viewingId = null;
+
+    // -------- Rendering --------
+    function filteredRows(){
+      const text = (q.value || "").trim().toLowerCase();
+      const range = rangeSel.value;
+      return rows
+        .filter(r => withinRange(r.date, range))
+        .filter(r => {
+          if (!text) return true;
+          const blob = `${r.date} ${r.type} ${r.name} ${r.category} ${r.amount} ${r.note || ""} ${statusFromRow(r)}`.toLowerCase();
+          return blob.includes(text);
+        });
+    }
+
+    function sortedRows(list){
+      const {key, dir} = sort;
+      const m = dir === "asc" ? 1 : -1;
+      return [...list].sort((a,b)=>{
+        let av = a[key], bv = b[key];
+        if (key === "amount") return (av - bv) * m;
+        if (key === "date") return (new Date(av) - new Date(bv)) * m;
+        return String(av).localeCompare(String(bv), "id", {sensitivity:"base"}) * m;
+      });
+    }
+
+    function paginate(list){
+      const size = Number(pageSizeSel.value);
+      const total = list.length;
+      const pages = Math.max(1, Math.ceil(total / size));
+      page = clamp(page, 1, pages);
+      const start = (page-1) * size;
+      return { slice: list.slice(start, start+size), pages, total };
+    }
+
+    function render(){
+      const list = sortedRows(filteredRows());
+      const { slice, pages, total } = paginate(list);
+
+      tbody.innerHTML = slice.map(r => {
+        const status = statusFromRow(r);
+        const typeLabel = r.type === "in" ? "Masuk" : "Keluar";
+        const amountSign = r.type === "in" ? "+" : "−";
+        const amountColor = r.type === "in" ? "color: rgba(43,213,118,.95)" : "color: rgba(255,204,102,.95)";
+
+        return `
+          <tr data-id="${r.id}">
+            <td class="mono">${r.date}</td>
+            <td style="font-weight:850; letter-spacing:.1px">${escapeHTML(r.name)}</td>
+            <td>${escapeHTML(r.category)}</td>
+            <td class="mono" style="font-weight:900; ${amountColor}">${amountSign} ${fmtIDR(r.amount)}</td>
+            <td>${tagHTML(status)} <span class="chip" style="margin-left:8px; padding:6px 9px; font-size:11.5px;">${typeLabel}</span></td>
+            <td style="text-align:right;">
+              <div class="actions">
+                <button class="pill view" data-act="view" type="button" aria-label="Lihat detail">
+                  ${iconEye()} Lihat
                 </button>
-                
-                <div class="table-wrapper">
-                    <table id="table_data" class="table table-striped table-bordered" style="width: 100%"></table>
-                </div>
+                <button class="pill edit" data-act="edit" type="button" aria-label="Edit nota">
+                  ${iconEdit()} Edit
+                </button>
+                <button class="pill del" data-act="delete" type="button" aria-label="Hapus nota">
+                  ${iconTrash()} Hapus
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      // pagination bar (simple, injected as last row if needed)
+      const existing = $("#pagerRow");
+      if (existing) existing.remove();
+
+      const pagerHTML = `
+        <tr id="pagerRow">
+          <td colspan="6" style="border-bottom:0;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding: 10px 2px;">
+              <div class="chip">
+                Menampilkan <strong>${slice.length}</strong> dari <strong>${total}</strong> nota
+                <span style="opacity:.65">(Hal ${page}/${pages})</span>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                <button class="ghost" type="button" id="prevPage" ${page<=1?"disabled":""} style="${page<=1?"opacity:.55; cursor:not-allowed;":""}">Sebelumnya</button>
+                <button class="ghost" type="button" id="nextPage" ${page>=pages?"disabled":""} style="${page>=pages?"opacity:.55; cursor:not-allowed;":""}">Berikutnya</button>
+              </div>
             </div>
-        </div>
-       
-        <div class="modal" id="myModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Tambah Produk</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-            
-                    <div class="modal-body">
-                        <form id="productForm">
-                            <input type="hidden" class="form-control" id="idProduk">
-                            <div class="mb-3">
-                                <label for="itemsProduk" class="form-label">Items</label>
-                                <input type="text" class="form-control" id="itemsProduk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="supplierProduk" class="form-label">Supplier</label>
-                                <input type="text" class="form-control" id="supplierProduk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="kotaProduk" class="form-label">Kota</label>
-                                <input type="text" class="form-control" id="kotaProduk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="gudangProduk" class="form-label">Gudang</label>
-                                <select class="form-control" id="gudangProduk" required>
-                                    <option value="">Pilih Gudang</option>
-                                    <option value="Kalipucang">Kalipucang</option>
-                                    <option value="Sekarjati">Sekarjati</option>
-                                    <option value="Troso">Troso</option>
-                                    <option value="Ngabul">Ngabul</option>
-                                    <option value="Masterbox">Masterbox</option>
-                                    <option value="Innerbox">Innerbox</option>
-                                    <option value="Flexo">Flexo</option>
-                                    <option value="Mess">Mess</option>
-                                    <option value="Kontrakan">Kontrakan</option>
-                                    <option value="Transportasi">Transportasi</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tanggalProduk" class="form-label">Tanggal (dd/mm/yyyy)</label>
-                                <input type="text" class="form-control" id="tanggalProduk" placeholder="dd/mm/yyyy" required>
-                                <div class="invalid-feedback" id="tanggalError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="hargaProduk" class="form-label">Harga</label>
-                                <input type="text" class="form-control" id="hargaProduk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="satuanProduk" class="form-label">Satuan</label>
-                                <select class="form-control" id="satuanProduk" required>
-                                    <option value="">Pilih Satuan</option>
-                                    <option value="klg">klg</option>
-                                    <option value="ml">ml</option>
-                                    <option value="ons">ons</option>
-                                    <option value="gr">gr</option>
-                                    <option value="pcs">pcs</option>
-                                    <option value="lbr">lbr</option>
-                                    <option value="btg">btg</option>
-                                    <option value="roll">roll</option>
-                                    <option value="kg">kg</option>
-                                    <option value="ltr">ltr</option>
-                                    <option value="m">m</option>
-                                    <option value="cm">cm</option>
-                                    <option value="box">box</option>
-                                    <option value="pack">pack</option>
-                                    <option value="unit">unit</option>
-                                    <option value="set">set</option>
-                                    <option value="rtg">rtg</option>
-                                    <option value="lsn">lsn</option>
-                                    <option value="gln">gln</option>
-                                    <option value="lainnya">lainnya</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="stokProduk" class="form-label">Stok</label>
-                                <input type="text" class="form-control" id="stokProduk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="deskripsiProduk" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="deskripsiProduk" rows="3" placeholder="Opsional"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-success" id="btnSimpan">
-                            <span class="btn-text">Simpan</span>
-                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+          </td>
+        </tr>
+      `;
+      tbody.insertAdjacentHTML("beforeend", pagerHTML);
 
-        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap.min.js"></script>
-        <script src="https://cdn.datatables.net/fixedheader/3.3.1/js/dataTables.fixedHeader.min.js"></script>
-        <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-        <script src="https://cdn.datatables.net/responsive/2.4.0/js/responsive.bootstrap.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                const BASE_URL = "https://script.google.com/macros/s/AKfycbyt9jW3tMt6uxcu15T0M2IsMCSXrrLT31Dueh3VOc4Bx3vqk0EdVp_ErTMmAHN1v70A/exec";
-                
-                // Cache untuk menyimpan data sementara
-                let isSaving = false;
-                
-                // Fungsi untuk encode nilai parameter URL
-                function encodeURLParam(value) {
-                    return encodeURIComponent(value);
-                }
-                
-                // Fungsi validasi format dd/mm/yyyy yang lebih cepat
-                function isValidTanggal(tanggal) {
-                    // Quick regex check
-                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(tanggal)) return false;
-                    
-                    const [day, month, year] = tanggal.split('/').map(Number);
-                    
-                    // Quick range check
-                    if (month < 1 || month > 12 || day < 1 || day > 31) return false;
-                    
-                    // Days in month (optimized)
-                    const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-                    
-                    return day <= daysInMonth[month - 1];
-                }
-                
-                // Validasi realtime untuk tanggal
-                $('#tanggalProduk').on('input', function() {
-                    const val = $(this).val();
-                    if (val && !isValidTanggal(val)) {
-                        $(this).addClass('is-invalid');
-                        $('#tanggalError').text('Format: dd/mm/yyyy');
-                    } else {
-                        $(this).removeClass('is-invalid');
-                    }
-                });
-                
-                const table = $("#table_data").DataTable({
-                    ajax: BASE_URL + "?action=get-product",
-                    columns: [
-                        { title: "NO", data: "id" },
-                        { title: "ITEMS", data: "items" },
-                        { title: "SUPPLIER", data: "supplier" },
-                        { title: "KOTA", data: "kota" },
-                        { title: "GUDANG", data: "gudang" },
-                        {
-                            title: "TANGGAL",
-                            data: "tanggal",
-                            render: function(data) {
-                                return data || '-';
-                            }
-                        },
-                        {
-                            title: "HARGA",
-                            data: "harga",
-                            className: "text-end",
-                            render: function(data, type) {
-                                if (type === 'display') {
-                                    const number = parseFloat(data);
-                                    return isNaN(number) ? data : number.toLocaleString('id-ID');
-                                }
-                                return data;
-                            }
-                        },
-                        { title: "SATUAN", data: "satuan" },
-                        { title: "STOK", data: "stok", visible: false },
-                        {
-                            title: "AKSI",
-                            data: null,
-                            className: "text-center",
-                            render: function(data, type, row) {
-                                return `
-                                    <div class="action-buttons">
-                                        <button class="btn-circle btn-edit edit" data-id="${row.id}" title="Edit">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </button>
-                                        <button class="btn-circle btn-view view" data-id="${row.id}" title="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                `;
-                            }
-                        }
-                    ],
-                    responsive: true,
-                    deferRender: true, // Optimasi rendering
-                    language: {
-                        paginate: {
-                            previous: '<span class="dt-prev" aria-label="Sebelumnya">‹</span>'
-                        }
-                    }
-                });
+      $("#prevPage").addEventListener("click", ()=>{ page--; render(); });
+      $("#nextPage").addEventListener("click", ()=>{ page++; render(); });
 
-                $('#tambahProduk').on('click', () => {
-                    clear();
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-title').text('Tambah Produk');
-                })
+      updateStats();
+      updatePeriodLabel();
+    }
 
-                $('#table_data tbody').on('click', '.edit', function () {
-                    const data = table.row($(this).parents('tr')).data();
-                    $('#idProduk').val(data.id);
-                    $('#itemsProduk').val(data.items);
-                    $('#supplierProduk').val(data.supplier);
-                    $('#kotaProduk').val(data.kota);
-                    $('#gudangProduk').val(data.gudang);
-                    $('#tanggalProduk').val(data.tanggal);
-                    $('#hargaProduk').val(data.harga);
-                    $('#satuanProduk').val(data.satuan);
-                    $('#stokProduk').val(data.stok);
-                    $('#deskripsiProduk').val(data.deskripsi || '');
-                    $('#myModal').modal('show');
-                    $('#myModal .modal-title').text('Edit Produk');
-                })
+    function updatePeriodLabel(){
+      periodLabel.textContent = rangeSel.value === "month" ? "Bulan ini" : (rangeSel.value === "week" ? "7 hari" : "Semua");
+    }
 
-                $('#table_data tbody').on('click', '.view', function () {
-                    const data = table.row($(this).parents('tr')).data();
-                    const deskripsi = data.deskripsi || 'Tidak ada deskripsi';
-                    alert('Deskripsi: ' + deskripsi);
-                })
+    function updateStats(){
+      const list = filteredRows();
+      const total = list.length;
+      const sumIn = list.filter(r=>r.type==="in").reduce((a,b)=>a+b.amount,0);
+      const sumOut = list.filter(r=>r.type==="out").reduce((a,b)=>a+b.amount,0);
+      statCount.textContent = total;
+      statIn.textContent = fmtIDR(sumIn);
+      statOut.textContent = fmtIDR(sumOut);
+      statNet.textContent = fmtIDR(sumIn - sumOut);
+    }
 
-                // Event handler dengan optimasi
-                $('#btnSimpan').on('click', function() {
-                    // Prevent double submission
-                    if (isSaving) return;
-                    
-                    const $btn = $(this);
-                    const $spinner = $btn.find('.spinner-border');
-                    const $text = $btn.find('.btn-text');
-                    
-                    // Get values (cached)
-                    const formData = {
-                        items: $('#itemsProduk').val().trim(),
-                        supplier: $('#supplierProduk').val().trim(),
-                        kota: $('#kotaProduk').val().trim(),
-                        gudang: $('#gudangProduk').val(),
-                        tanggal: $('#tanggalProduk').val().trim(),
-                        harga: $('#hargaProduk').val().trim(),
-                        satuan: $('#satuanProduk').val(),
-                        stok: $('#stokProduk').val().trim(),
-                        deskripsi: $('#deskripsiProduk').val().trim(),
-                        id: $('#idProduk').val()
-                    };
+    // -------- Sorting (clickable headers) --------
+    function initSorting(){
+      const headers = $$("#notaTable thead th");
+      const keys = ["date","name","category","amount","status","actions"];
+      headers.forEach((th, i)=>{
+        const key = keys[i];
+        if (!["date","name","category","amount"].includes(key)) return;
+        th.style.cursor = "pointer";
+        th.title = "Klik untuk mengurutkan";
+        th.addEventListener("click", ()=>{
+          if (sort.key === key) sort.dir = sort.dir === "asc" ? "desc" : "asc";
+          else { sort.key = key; sort.dir = (key==="date"||key==="amount") ? "desc" : "asc"; }
+          page = 1;
+          render();
+        });
+      });
+    }
 
-                    // Validasi cepat
-                    if (!formData.items || !formData.supplier || !formData.kota || !formData.gudang || 
-                        !formData.tanggal || !formData.harga || !formData.satuan || !formData.stok) {
-                        alert('Harap lengkapi semua field!');
-                        return;
-                    }
+    // -------- Actions --------
+    function openAdd(){
+      modalTitle.textContent = "Tambah Nota";
+      notaId.value = "";
+      fDate.value = todayISO();
+      fType.value = "in";
+      fName.value = "";
+      fCategory.value = "Penjualan";
+      fAmount.value = "";
+      fNote.value = "";
+      clearInvalid();
+      notaModal.showModal();
+      setTimeout(()=>fName.focus(), 50);
+    }
 
-                    // Validasi format tanggal
-                    if (!isValidTanggal(formData.tanggal)) {
-                        $('#tanggalProduk').addClass('is-invalid');
-                        $('#tanggalError').text('Format tanggal harus dd/mm/yyyy');
-                        return;
-                    }
+    function openEdit(id){
+      const r = rows.find(x=>x.id===id);
+      if (!r) return;
+      modalTitle.textContent = "Edit Nota";
+      notaId.value = r.id;
+      fDate.value = r.date;
+      fType.value = r.type;
+      fName.value = r.name;
+      fCategory.value = r.category;
+      fAmount.value = String(r.amount);
+      fNote.value = r.note || "";
+      clearInvalid();
+      notaModal.showModal();
+      setTimeout(()=>fName.focus(), 50);
+    }
 
-                    $('#tanggalProduk').removeClass('is-invalid');
-                    
-                    // Set loading state
-                    isSaving = true;
-                    $btn.prop('disabled', true);
-                    $text.addClass('d-none');
-                    $spinner.removeClass('d-none');
+    function openView(id){
+      const r = rows.find(x=>x.id===id);
+      if (!r) return;
+      viewingId = id;
+      vDate.textContent = r.date;
+      vName.textContent = r.name;
+      vCategory.textContent = r.category;
+      vType.textContent = r.type === "in" ? "Masuk" : "Keluar";
+      vAmount.textContent = fmtIDR(r.amount);
+      vNote.textContent = r.note ? r.note : "—";
+      viewModal.showModal();
+    }
 
-                    // Build URL dengan parameter yang sudah di-encode
-                    const action = formData.id ? 'update' : 'insert';
-                    const params = new URLSearchParams({
-                        action: action,
-                        items: formData.items,
-                        supplier: formData.supplier,
-                        kota: formData.kota,
-                        gudang: formData.gudang,
-                        tanggal: formData.tanggal,
-                        harga: formData.harga,
-                        satuan: formData.satuan,
-                        stok: formData.stok,
-                        deskripsi: formData.deskripsi
-                    });
-                    
-                    if (formData.id) {
-                        params.append('id', formData.id);
-                    }
+    function removeRow(id){
+      const r = rows.find(x=>x.id===id);
+      if (!r) return;
+      const ok = confirm(`Hapus nota:\n"${r.name}" (${r.date})\n\nTindakan ini tidak bisa dibatalkan.`);
+      if (!ok) return;
+      rows = rows.filter(x=>x.id!==id);
+      saveData(rows);
+      render();
+    }
 
-                    const apiUrl = BASE_URL + '?' + params.toString();
+    function clearInvalid(){
+      $$(".control").forEach(c => c.dataset.invalid = "false");
+    }
 
-                    // Kirim request dengan timeout
-                    $.ajax({
-                        url: apiUrl,
-                        method: 'GET',
-                        dataType: 'json',
-                        timeout: 15000, // 15 detik timeout
-                        success: function(result) {
-                            if (result.success) {
-                                // Tutup modal terlebih dahulu untuk feedback lebih cepat
-                                $('#myModal').modal('hide');
-                                
-                                // Reload table di background
-                                table.ajax.reload(null, false);
-                                
-                                // Clear form
-                                clear();
-                                
-                                // Alert setelah modal tertutup
-                                setTimeout(() => {
-                                    alert(result.message);
-                                }, 300);
-                            } else {
-                                alert('Error: ' + result.message);
-                            }
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.error('Request failed:', textStatus, errorThrown);
-                            alert('Gagal menyimpan data. Silakan coba lagi.');
-                        },
-                        complete: function() {
-                            // Reset loading state
-                            isSaving = false;
-                            $btn.prop('disabled', false);
-                            $text.removeClass('d-none');
-                            $spinner.addClass('d-none');
-                        }
-                    });
-                });
-                
-                // Shortcut: Enter untuk submit (opsional)
-                $('#productForm').on('keypress', function(e) {
-                    if (e.which === 13 && e.target.tagName !== 'TEXTAREA') {
-                        e.preventDefault();
-                        $('#btnSimpan').click();
-                    }
-                });
-            });
+    function validate(){
+      clearInvalid();
+      let ok = true;
 
-            function clear() {
-                $('#productForm')[0].reset();
-                $('#idProduk').val('');
-                $('#tanggalProduk').removeClass('is-invalid');
-            }
-        </script>
-    </body>
+      if (!fDate.value){
+        parentControl(fDate).dataset.invalid = "true"; ok = false;
+      }
+      if (!fName.value.trim()){
+        parentControl(fName).dataset.invalid = "true"; ok = false;
+      }
+      const amt = safeNumberFromText(fAmount.value);
+      if (!amt || amt <= 0){
+        parentControl(fAmount).dataset.invalid = "true"; ok = false;
+      }
+      if (!fCategory.value){
+        parentControl(fCategory).dataset.invalid = "true"; ok = false;
+      }
+      if (!fType.value){
+        parentControl(fType).dataset.invalid = "true"; ok = false;
+      }
+      return ok;
+    }
+
+    function parentControl(el){ return el.closest(".control"); }
+
+    // -------- CSV export --------
+    function exportCSV(){
+      const list = sortedRows(filteredRows());
+      const header = ["Tanggal","Tipe","Nama","Kategori","Nominal","Status","Catatan"];
+      const lines = [header.join(",")];
+
+      for (const r of list){
+        const status = statusFromRow(r);
+        const row = [
+          r.date,
+          r.type === "in" ? "Masuk" : "Keluar",
+          csvEscape(r.name),
+          csvEscape(r.category),
+          String(r.amount),
+          csvEscape(status),
+          csvEscape(r.note || "")
+        ];
+        lines.push(row.join(","));
+      }
+
+      const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `DailyNota_${todayISO()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvEscape(v){
+      const s = String(v ?? "");
+      if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+      return s;
+    }
+
+    // -------- Escape HTML (XSS safety) --------
+    function escapeHTML(str){
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // -------- Icons (inline) --------
+    function iconEye(){
+      return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
+      </svg>`;
+    }
+    function iconEdit(){
+      return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    }
+    function iconTrash(){
+      return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 6h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 6V4h8v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 6v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>`;
+    }
+
+    // -------- Events --------
+    $("#addBtn").addEventListener("click", openAdd);
+    $("#cancelBtn").addEventListener("click", ()=> notaModal.close());
+    $("#closeModal").addEventListener("click", ()=> notaModal.close());
+
+    $("#closeView").addEventListener("click", ()=> viewModal.close());
+    $("#editFromView").addEventListener("click", ()=>{
+      if (!viewingId) return;
+      viewModal.close();
+      openEdit(viewingId);
+    });
+
+    $("#copyDetail").addEventListener("click", async ()=>{
+      if (!viewingId) return;
+      const r = rows.find(x=>x.id===viewingId);
+      if (!r) return;
+      const text = `${r.date} • ${r.type==="in"?"Masuk":"Keluar"} • ${r.category} • ${r.name} • ${fmtIDR(r.amount)}${r.note?` • ${r.note}`:""}`;
+      try{
+        await navigator.clipboard.writeText(text);
+        $("#copyDetail").textContent = "Tersalin";
+        setTimeout(()=>$("#copyDetail").textContent="Copy Ringkas", 900);
+      }catch(e){
+        alert("Clipboard tidak tersedia di browser ini.");
+      }
+    });
+
+    $("#exportCsv").addEventListener("click", exportCSV);
+
+    $("#resetDemo").addEventListener("click", ()=>{
+      const ok = confirm("Reset demo akan mengembalikan data contoh. Lanjut?");
+      if (!ok) return;
+      localStorage.removeItem(storeKey);
+      rows = loadData();
+      page = 1;
+      render();
+    });
+
+    $("#refreshBtn").addEventListener("click", ()=>{
+      // tiny micro-interaction: nudge
+      $("#refreshBtn").style.transform = "translateY(-1px) rotate(-8deg)";
+      setTimeout(()=>$("#refreshBtn").style.transform="", 180);
+      updateStats();
+    });
+
+    q.addEventListener("input", ()=>{ page = 1; render(); });
+    rangeSel.addEventListener("change", ()=>{ page = 1; render(); });
+    pageSizeSel.addEventListener("change", ()=>{ page = 1; render(); });
+
+    // Table row actions (event delegation)
+    tbody.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const tr = e.target.closest("tr[data-id]");
+      if (!tr) return;
+      const id = tr.dataset.id;
+      const act = btn.dataset.act;
+      if (act === "view") openView(id);
+      if (act === "edit") openEdit(id);
+      if (act === "delete") removeRow(id);
+    });
+
+    // Save form
+    notaForm.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      if (!validate()) return;
+
+      const payload = {
+        id: notaId.value || uid(),
+        date: fDate.value,
+        type: fType.value,
+        name: fName.value.trim(),
+        category: fCategory.value,
+        amount: safeNumberFromText(fAmount.value),
+        note: fNote.value.trim()
+      };
+
+      const idx = rows.findIndex(x=>x.id===payload.id);
+      if (idx >= 0) rows[idx] = payload;
+      else rows.unshift(payload);
+
+      saveData(rows);
+      notaModal.close();
+      page = 1;
+      render();
+    });
+
+    // Theme (contrast) toggle (subtle, not full dark/light swap)
+    let contrast = false;
+    $("#themeBtn").addEventListener("click", ()=>{
+      contrast = !contrast;
+      document.documentElement.style.setProperty("--bg0", contrast ? "#050816" : "#0b1020");
+      document.documentElement.style.setProperty("--bg1", contrast ? "#070b1a" : "#0e1530");
+      document.documentElement.style.setProperty("--paper", contrast ? "#0b1030" : "#0f1634");
+      document.documentElement.style.setProperty("--paper2", contrast ? "#0d1440" : "#121b41");
+    });
+
+    // Staggered reveal + scroll reveal
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((en)=>{
+        if (en.isIntersecting){
+          en.target.classList.add("revealed");
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    $$("[data-reveal]").forEach((el, i)=>{
+      el.style.transitionDelay = `${i*90}ms`;
+      io.observe(el);
+    });
+
+    // init
+    initSorting();
+    render();
+  </script>
+</body>
 </html>
