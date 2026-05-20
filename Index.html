@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <title>DailyNota</title>
+        <style>
+            :root {
+                --primary: #818cf8;
+                --primary-hover: #6366f1;
+                --primary-light: rgba(129, 140, 248, 0.08);
+                --accent: #a5b4fc;
+                --accent-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+                --text-dark: #e2e8f0;    /* Softer white for headings */
+                --text-body: #a1a1aa;    /* zinc-400 (very warm and soft body text) */
+                --text-muted: #71717a;   /* zinc-500 (muted secondary labels) */
+                --border: #27272a;       /* zinc-800 (warm dark border) */
+                --bg: #121214;           /* Warm soft dark background */
+                --card-bg: #18181b;      /* zinc-900 (soft charcoal card background) */
+                --white: #18181b;        /* soft components background */
+                --red: #fca5a5;          /* Pastel warm red */
+                --red-light: rgba(252, 165, 165, 0.06);
+                --green: #a7f3d0;        /* Pastel warm green */
+                --green-light: rgba(167, 243, 208, 0.06);
+                --radius: 12px;
+                --radius-sm: 8px;
+                --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+                --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+                --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+            }
+
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            body {
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+                background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, rgba(9, 13, 22, 1) 60%);
+                color: var(--text-body);
+                min-height: 100vh;
+            }
+
+            /* Scrollbar styling */
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #090d16;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #1e293b;
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #334155;
+            }
+
+            h1, h2, h3, h4, h5, h6, .modal-title, .stat-value {
+                font-family: 'Outfit', sans-serif;
+                font-weight: 700;
+            }
+
+            .main-wrap {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 24px 20px;
+            }
+
+            /* ====== HEADER ====== */
+            .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .brand h1 {
+                font-size: 1.6rem;
+                font-weight: 800;
+                color: var(--text-dark);
+                letter-spacing: -0.5px;
+            }
+
+            .brand-sub {
+                font-size: 0.72rem;
+                color: var(--text-muted);
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: var(--white);
+                padding: 5px 12px;
+                border-radius: 30px;
+                border: 1px solid var(--border);
+                margin-top: 6px;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .status-dot {
+                width: 7px; height: 7px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            @keyframes pulse {
+                0% { transform: scale(0.95); opacity: 0.85; }
+                50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px rgba(52, 211, 153, 0.5); }
+                100% { transform: scale(0.95); opacity: 0.85; }
+            }
+            .status-dot.online { 
+                background: var(--green); 
+                animation: pulse 2s infinite;
+            }
+            .status-dot.offline { background: var(--red); }
+
+            .header-actions {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            /* ====== BUTTONS ====== */
+            .btn-primary-custom {
+                background: var(--accent-gradient);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-weight: 600;
+                font-size: 0.82rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            }
+            .btn-primary-custom:hover { 
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+                opacity: 0.95; 
+                color: white; 
+            }
+
+            .btn-outline-custom {
+                background: var(--white);
+                color: var(--text-body);
+                border: 1px solid var(--border);
+                padding: 10px 18px;
+                border-radius: var(--radius);
+                font-weight: 600;
+                font-size: 0.82rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: var(--shadow-sm);
+            }
+            .btn-outline-custom:hover { 
+                background: #1e293b; 
+                border-color: #334155; 
+                transform: translateY(-1px);
+                box-shadow: var(--shadow);
+                color: var(--text-dark);
+            }
+
+            /* ====== STATS ====== */
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+
+            .stat-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 18px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-lg);
+                border-color: rgba(99, 102, 241, 0.3);
+            }
+
+            .stat-info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .stat-label {
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+                font-weight: 800;
+                color: var(--text-dark);
+                line-height: 1;
+            }
+
+            .stat-icon-wrapper {
+                width: 44px; height: 44px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+                transition: all 0.2s ease;
+            }
+            .stat-card:hover .stat-icon-wrapper {
+                transform: scale(1.1);
+            }
+            .stat-total .stat-icon-wrapper { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+            .stat-gudang .stat-icon-wrapper { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+            .stat-supplier .stat-icon-wrapper { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+            .stat-kota .stat-icon-wrapper { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+            /* ====== TOOLBAR ====== */
+            .toolbar {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                margin-bottom: 16px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                align-items: flex-end;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .toolbar-search {
+                flex: 1;
+                min-width: 220px;
+                position: relative;
+            }
+
+            .toolbar-search input {
+                width: 100%;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 10px 14px 10px 38px;
+                font-size: 0.85rem;
+                background: #121214;
+                transition: all 0.2s ease;
+                color: var(--text-dark);
+            }
+
+            .toolbar-search input:focus {
+                outline: none;
+                border-color: var(--accent);
+                background: #27272a;
+                box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+            }
+
+            .toolbar-search .search-icon {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-muted);
+                font-size: 0.85rem;
+            }
+
+            .toolbar-search .clear-btn {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: none;
+                background: none;
+                color: var(--text-muted);
+                cursor: pointer;
+                font-size: 0.8rem;
+                display: none;
+                padding: 2px;
+            }
+            .toolbar-search .clear-btn.visible { display: block; }
+
+            .toolbar-filters {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: flex-end;
+            }
+
+            .filter-item select {
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 9px 32px 9px 12px;
+                background: #121214;
+                font-size: 0.82rem;
+                color: var(--text-body);
+                font-weight: 500;
+                cursor: pointer;
+                min-width: 140px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                transition: all 0.2s ease;
+            }
+
+            .filter-item select:focus {
+                outline: none;
+                border-color: var(--accent);
+                background: #27272a;
+                box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+            }
+
+            .result-count {
+                width: 100%;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                font-weight: 600;
+                padding-top: 4px;
+            }
+            .result-count strong { color: var(--text-dark); font-weight: 700; }
+
+            /* ====== TABLE ====== */
+            .table-wrap {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                overflow-x: auto;
+                position: relative;
+                box-shadow: var(--shadow-sm);
+            }
+
+            #table_data {
+                width: 100% !important;
+                min-width: 1100px;
+                margin: 0;
+            }
+
+            #table_data thead {
+                background: #18181b;
+                border-bottom: 2px solid var(--border);
+            }
+
+            #table_data thead th {
+                border: none;
+                padding: 14px 10px;
+                font-weight: 600;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                color: #a1a1aa;
+                text-align: center;
+            }
+
+            #table_data tbody tr {
+                transition: background 0.15s ease;
+                border-bottom: 1px solid #27272a;
+            }
+
+            #table_data tbody tr:hover {
+                background: #27272a;
+            }
+
+            #table_data tbody td {
+                padding: 12px 10px;
+                font-size: 0.82rem;
+                color: var(--text-body);
+                vertical-align: middle;
+            }
+
+            .row-num {
+                font-weight: 600;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+            }
+
+            .cell-items {
+                font-weight: 500;
+                color: var(--text-body);
+                display: block;
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            .cell-harga {
+                text-align: right;
+                font-weight: 500;
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+                color: var(--text-body);
+            }
+
+            .cell-stok {
+                text-align: center;
+                font-weight: 500;
+                color: var(--text-body);
+            }
+            .badge-stok {
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.78rem;
+                font-weight: 600;
+                display: inline-block;
+            }
+            .bg-success-light { background: rgba(167, 243, 208, 0.08); }
+            .text-success-dark { color: #a7f3d0; }
+            .bg-danger-light { background: rgba(252, 165, 165, 0.08); }
+            .text-danger-dark { color: #fca5a5; }
+
+            .cell-tanggal {
+                white-space: nowrap;
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                font-weight: 500;
+            }
+
+            .cell-satuan {
+                background: #27272a;
+                color: #a1a1aa;
+                padding: 3px 8px;
+                border-radius: 20px;
+                font-size: 0.72rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            /* Action buttons */
+            .action-btns { display: flex; justify-content: center; gap: 6px; }
+
+            .btn-act {
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                width: 32px; height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.78rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                background: #27272a;
+                color: var(--text-muted);
+            }
+            .btn-act:hover { border-color: var(--accent); color: var(--accent); background: rgba(129, 140, 248, 0.15); }
+            .btn-act.act-delete:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+
+            /* Empty state */
+            .empty-state {
+                padding: 60px 20px;
+                text-align: center;
+                color: var(--text-muted);
+            }
+            .empty-state i { font-size: 2.2rem; margin-bottom: 12px; opacity: 0.3; color: var(--accent); }
+            .empty-state h3 { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+            .empty-state p { font-size: 0.82rem; }
+
+            /* Loading */
+            .loading-overlay {
+                position: absolute;
+                inset: 0;
+                background: rgba(18, 18, 20, 0.85);
+                z-index: 10;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                border-radius: var(--radius);
+            }
+            .spinner { width: 34px; height: 34px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite; }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            .loading-text { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+
+            /* DataTables overrides */
+            .dataTables_filter { display: none !important; }
+            .dataTables_length { padding: 12px 16px; }
+            .dataTables_length label { font-size: 0.78rem; font-weight: 600; color: var(--text-body); }
+            .dataTables_length select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; margin: 0 4px; outline: none; background: #121214; color: var(--text-body); }
+            .dataTables_info { padding: 12px 16px; font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+            .dataTables_paginate { padding: 12px 16px; }
+            .paginate_button { border-radius: 8px !important; margin: 0 2px !important; font-size: 0.78rem !important; font-weight: 600 !important; min-width: 30px; height: 30px; display: inline-flex !important; align-items: center; justify-content: center; border: 1px solid var(--border) !important; background: #18181b !important; color: var(--text-body) !important; transition: all 0.2s ease !important; }
+            .paginate_button.current { background: var(--accent-gradient) !important; color: white !important; border: none !important; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2) !important; }
+            .paginate_button:hover { background: var(--primary-light) !important; color: var(--accent) !important; border-color: var(--accent) !important; }
+
+            /* Modal */
+            .modal-content { border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; }
+            .modal-header { background: var(--accent-gradient); color: white; border: none; padding: 16px 20px; }
+            .modal-header .btn-close { filter: brightness(0) invert(1); }
+            .modal-body { padding: 24px; background: var(--white); }
+            .modal-body .form-label { font-weight: 700; font-size: 0.72rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+            .modal-body .form-control, .modal-body .form-select { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; background: #121214; color: var(--text-dark); transition: all 0.2s ease; }
+            .modal-body .form-control:focus, .modal-body .form-select:focus { border-color: var(--accent); background: #27272a; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15); }
+            .form-control.is-invalid { border-color: var(--red); }
+            .invalid-feedback { color: var(--red); font-size: 0.75rem; font-weight: 500; }
+            .modal-footer { border-top: 1px solid var(--border); padding: 16px 24px; gap: 10px; background: #18181b; }
+            .modal-footer .btn-save { background: var(--accent-gradient); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; flex: 1; transition: all 0.2s ease; }
+            .modal-footer .btn-save:hover { opacity: 0.95; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+            .modal-footer .btn-cancel { flex: 1; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; padding: 10px 20px; background: #27272a; color: var(--text-body); transition: all 0.2s ease; }
+            .modal-footer .btn-cancel:hover { background: #3f3f46; }
+
+            /* View modal */
+            .view-card-header { background: var(--accent-gradient); padding: 18px 24px; color: white; }
+            .view-card-header h5 { font-weight: 700; font-size: 1.1rem; margin: 0; }
+            .view-card-body { padding: 20px 24px; }
+            .view-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; }
+            .view-row:last-child { border: none; }
+            .view-label { font-weight: 700; color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+            .view-value { font-weight: 600; color: var(--text-dark); font-size: 0.85rem; }
+
+            /* Delete modal */
+            .del-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--red-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.3rem; color: var(--red); }
+            .del-title { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); margin-bottom: 6px; }
+            .del-desc { font-size: 0.85rem; color: var(--text-muted); }
+            .del-name { font-weight: 700; color: var(--text-dark); }
+
+            /* Toast */
+            .toast-box { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+            .toast-item { background: #111827; border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; min-width: 280px; animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-left: 4px solid var(--green); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+            .toast-item.error { border-left-color: var(--red); }
+            .toast-item .t-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; flex-shrink: 0; }
+            .toast-item .t-icon.ok { background: var(--green); }
+            .toast-item .t-icon.err { background: var(--red); }
+            @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .main-wrap { padding: 16px 12px; }
+                .header { flex-direction: column; align-items: flex-start; gap: 14px; }
+                .brand h1 { font-size: 1.4rem; }
+                .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+                .stat-card { padding: 14px 16px; }
+                .stat-value { font-size: 1.3rem; }
+                .stat-icon-wrapper { width: 38px; height: 38px; font-size: 1.1rem; }
+                .toolbar { flex-direction: column; padding: 14px 16px; }
+                .toolbar-search { min-width: 100%; }
+                .toolbar-filters { width: 100%; gap: 6px; }
+                .filter-item { flex: 1; min-width: 100px; }
+                .filter-item select { width: 100%; }
+                .btn-primary-custom, .btn-outline-custom { width: 100%; justify-content: center; }
+                .header-actions { width: 100%; gap: 8px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="toast-box" id="toastBox"></div>
+
+        <div class="main-wrap">
+            <!-- Header -->
+            <div class="header">
+                <div class="brand">
+                    <h1>DailyNota</h1>
+                    <div class="brand-sub">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Connecting...</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-outline-custom" id="btnResync" title="Hapus data Firebase & import ulang dari Spreadsheet">
+                        <i class="fas fa-arrows-rotate"></i> Resync
+                    </button>
+                    <button class="btn-outline-custom" id="btnSync" title="Import dari Spreadsheet ke Firebase">
+                        <i class="fas fa-sync-alt"></i> Sync
+                    </button>
+                    <button class="btn-primary-custom" id="tambahProduk">
+                        <i class="fas fa-plus"></i> Tambah Produk
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card stat-total">
+                    <div class="stat-info">
+                        <div class="stat-label">Total Produk</div>
+                        <div class="stat-value" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+                <div class="stat-card stat-gudang">
+                    <div class="stat-info">
+                        <div class="stat-label">Gudang</div>
+                        <div class="stat-value" id="statGudang">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                </div>
+                <div class="stat-card stat-supplier">
+                    <div class="stat-info">
+                        <div class="stat-label">Supplier</div>
+                        <div class="stat-value" id="statSupplier">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                </div>
+                <div class="stat-card stat-kota">
+                    <div class="stat-info">
+                        <div class="stat-label">Kota</div>
+                        <div class="stat-value" id="statKota">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="globalSearch" placeholder="Cari produk, supplier, kota..." autocomplete="off">
+                    <button class="clear-btn" id="searchClear"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="toolbar-filters">
+                    <div class="filter-item">
+                        <select id="filterGudang"><option value="">Semua Gudang</option></select>
+                    </div>
+                    <div class="filter-item">
+                        <select id="filterSupplier"><option value="">Semua Supplier</option></select>
+                    </div>
+                    <div class="filter-item">
+                        <select id="filterKota"><option value="">Semua Kota</option></select>
+                    </div>
+                    <button class="btn-outline-custom" id="resetFilters" style="padding:8px 12px;">
+                        <i class="fas fa-rotate-left"></i> Reset
+                    </button>
+                </div>
+                <div class="result-count">
+                    Menampilkan <strong id="resultNum">0</strong> produk
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrap" id="tableWrap">
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Memuat data...</div>
+                </div>
+                <table id="table_data" class="table" style="width:100%"></table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Modal -->
+        <div class="modal" id="myModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle"><i class="fas fa-plus-circle me-2"></i>Tambah Produk</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="productForm">
+                            <input type="hidden" id="idProduk">
+                            <!-- Urutan sesuai spreadsheet -->
+                            <div class="mb-3"><label class="form-label">Items</label><input type="text" class="form-control" id="itemsProduk" placeholder="Nama produk..." required></div>
+                            <div class="mb-3"><label class="form-label">Supplier</label><input type="text" class="form-control" id="supplierProduk" placeholder="Nama supplier..." required></div>
+                            <div class="mb-3"><label class="form-label">Kota</label><input type="text" class="form-control" id="kotaProduk" placeholder="Nama kota..." required></div>
+                            <div class="mb-3">
+                                <label class="form-label">Gudang</label>
+                                <select class="form-select" id="gudangProduk" required>
+                                    <option value="">Pilih Gudang</option>
+                                    <option>Kalipucang</option><option>Sekarjati</option><option>Troso</option><option>Ngabul</option>
+                                    <option>Masterbox</option><option>Innerbox</option><option>Flexo</option><option>Mess</option>
+                                    <option>Kontrakan</option><option>Transportasi</option><option>Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal (dd/mm/yyyy)</label>
+                                <input type="text" class="form-control" id="tanggalProduk" placeholder="dd/mm/yyyy" required>
+                                <div class="invalid-feedback" id="tanggalError"></div>
+                            </div>
+                            <div class="mb-3"><label class="form-label">Harga</label><input type="text" class="form-control" id="hargaProduk" placeholder="Contoh: 50000" required></div>
+                            <div class="mb-3">
+                                <label class="form-label">Satuan</label>
+                                <select class="form-select" id="satuanProduk" required>
+                                    <option value="">Pilih Satuan</option>
+                                    <option>klg</option><option>ml</option><option>ons</option><option>gr</option><option>pcs</option>
+                                    <option>lbr</option><option>btg</option><option>roll</option><option>kg</option><option>ltr</option>
+                                    <option>m</option><option>cm</option><option>box</option><option>pack</option><option>unit</option>
+                                    <option>set</option><option>rtg</option><option>lsn</option><option>gln</option><option>lainnya</option>
+                                </select>
+                            </div>
+                            <div class="mb-3"><label class="form-label">Stok</label><input type="text" class="form-control" id="stokProduk" placeholder="Jumlah stok..." required></div>
+                            <div class="mb-3"><label class="form-label">Deskripsi</label><textarea class="form-control" id="deskripsiProduk" rows="2" placeholder="Opsional..."></textarea></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn-save" id="btnSimpan">
+                            <span class="btn-text"><i class="fas fa-check me-1"></i>Simpan</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Modal -->
+        <div class="modal" id="viewModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="view-card-header"><h5 id="viewTitle">Detail Produk</h5></div>
+                    <div class="view-card-body" id="viewBody"></div>
+                    <div class="modal-footer" style="background:white;">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal" style="flex:1;">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Modal -->
+        <div class="modal" id="deleteModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body text-center" style="padding:24px 18px 14px;">
+                        <div class="del-icon"><i class="fas fa-trash-alt"></i></div>
+                        <div class="del-title">Hapus Produk?</div>
+                        <p class="del-desc">Produk <span class="del-name" id="deleteItemName"></span> akan dihapus permanen.</p>
+                    </div>
+                    <div class="modal-footer" style="justify-content:center;background:white;">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal" style="flex:1;">Batal</button>
+                        <button type="button" class="btn-save" id="btnConfirmDelete" style="background:var(--red);flex:1;">
+                            <span class="btn-text"><i class="fas fa-trash me-1"></i>Hapus</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jqc-1.12.4/dt-1.13.1/datatables.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+        <script src="config.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                // ====== FIREBASE INIT ======
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
+                const productsRef = db.collection(FIRESTORE_COLLECTION);
+
+                let isSaving = false, isDeleting = false, deleteTargetId = null;
+                let unsubscribeSnapshot = null, allProducts = [];
+
+                // ====== [FIX] Generate Unique ID di Frontend ======
+                // ID yang sama digunakan untuk Firebase DAN Spreadsheet
+                function generateId() {
+                    return 'DN-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                }
+
+                // ====== [FIX] Escape HTML untuk mencegah XSS ======
+                function escapeHtml(str) {
+                    if (!str) return '';
+                    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                }
+
+                // ====== CONNECTION STATUS ======
+                function setStatus(online) {
+                    $('#statusDot').toggleClass('online', online).toggleClass('offline', !online);
+                    $('#statusText').text(online ? 'Online' : 'Offline');
+                }
+
+                // ====== TOAST ======
+                function toast(msg, type = 'success') {
+                    const icon = type === 'success' ? 'fa-check' : 'fa-exclamation-triangle';
+                    const cls = type === 'success' ? 'ok' : 'err';
+                    const $t = $(`<div class="toast-item ${type === 'error' ? 'error' : ''}"><div class="t-icon ${cls}"><i class="fas ${icon}"></i></div><span>${msg}</span></div>`);
+                    $('#toastBox').append($t);
+                    setTimeout(() => { $t.css('animation', 'toastOut 0.25s forwards'); setTimeout(() => $t.remove(), 250); }, 3500);
+                }
+
+                // ====== HELPERS ======
+                function formatHarga(val) {
+                    const n = parseFloat(val);
+                    if (isNaN(n)) return val || '-';
+                    return 'Rp ' + n.toLocaleString('id-ID');
+                }
+
+                function isValidTanggal(s) {
+                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return false;
+                    const [d, m, y] = s.split('/').map(Number);
+                    if (m < 1 || m > 12 || d < 1 || d > 31) return false;
+                    const dim = [31, (y%4===0&&(y%100!==0||y%400===0))?29:28, 31,30,31,30,31,31,30,31,30,31];
+                    return d <= dim[m-1];
+                }
+
+                function isNumeric(v) {
+                    if (v === undefined || v === null) return false;
+                    let str = v.toString().trim().replace(/[Rp\s]/gi, '');
+                    if (str === '') return false;
+                    
+                    if (str.includes(',')) {
+                        const parts = str.split(',');
+                        if (parts.length > 2) return false;
+                        str = str.replace(/\./g, '').replace(/,/g, '.');
+                    } else {
+                        const parts = str.split('.');
+                        if (parts.length > 1) {
+                            const isThousand = parts.slice(1).every(part => part.length === 3);
+                            if (isThousand) {
+                                str = str.replace(/\./g, '');
+                            } else if (parts.length > 2) {
+                                return false;
+                            }
+                        }
+                    }
+                    return /^-?\d+(\.\d+)?$/.test(str);
+                }
+
+                function parseIndonesianNumber(v) {
+                    if (!isNumeric(v)) return 0;
+                    let str = v.toString().trim().replace(/[Rp\s]/gi, '');
+                    if (str === '') return 0;
+
+                    if (str.includes(',')) {
+                        str = str.replace(/\./g, '').replace(/,/g, '.');
+                    } else {
+                        const parts = str.split('.');
+                        if (parts.length > 1) {
+                            const isThousand = parts.slice(1).every(part => part.length === 3);
+                            if (isThousand) {
+                                str = str.replace(/\./g, '');
+                            }
+                        }
+                    }
+                    return parseFloat(str) || 0;
+                }
+
+                // ====== FORMAT TANGGAL dari berbagai format ======
+                // [FIX] Handle semua format: Firestore Timestamp, Date object, ISO string, dd/mm/yyyy, epoch
+                function formatTanggal(value) {
+                    if (!value) return '-';
+                    // Firestore Timestamp (memiliki method .toDate())
+                    if (value && typeof value.toDate === 'function') {
+                        const d = value.toDate();
+                        if (!isNaN(d.getTime())) return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+                    }
+                    // JavaScript Date object
+                    if (value instanceof Date) {
+                        if (!isNaN(value.getTime())) return String(value.getDate()).padStart(2,'0') + '/' + String(value.getMonth()+1).padStart(2,'0') + '/' + value.getFullYear();
+                    }
+                    // String dd/mm/yyyy (sudah benar)
+                    if (typeof value === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(value.trim())) return value.trim();
+                    // String ISO format (2026-04-14T17:00:00.000Z)
+                    if (typeof value === 'string' && value.includes('T')) {
+                        const d = new Date(value);
+                        if (!isNaN(d.getTime())) return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+                    }
+                    // String format lain yang bisa di-parse (2026-04-14, dll)
+                    if (typeof value === 'string' && value.trim()) {
+                        const d = new Date(value.trim());
+                        if (!isNaN(d.getTime()) && d.getFullYear() > 1970) return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+                    }
+                    // Epoch timestamp (milidetik)
+                    if (typeof value === 'number') {
+                        if (value > 1000000000000) {
+                            const d = new Date(value);
+                            if (!isNaN(d.getTime())) return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+                        }
+                        return value.toString();
+                    }
+                    // Fallback: kembalikan sebagai string (bukan raw ISO)
+                    const str = String(value);
+                    // Jika string terlihat seperti ISO date, coba parse sekali lagi
+                    if (str.length > 10 && str.includes('-')) {
+                        const d = new Date(str);
+                        if (!isNaN(d.getTime()) && d.getFullYear() > 1970) return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+                    }
+                    return str;
+                }
+
+                // ====== Firestore doc → row ======
+                // Field order sesuai spreadsheet: id, items, supplier, kota, gudang, tanggal, harga, satuan, stok, deskripsi
+                function docToRow(doc) {
+                    const d = doc.data();
+                    return {
+                        id: doc.id,
+                        items: String(d.items || ''),
+                        supplier: String(d.supplier || ''),
+                        kota: String(d.kota || ''),
+                        gudang: String(d.gudang || ''),
+                        tanggal: formatTanggal(d.tanggal),
+                        harga: parseFloat(d.harga) || 0,
+                        satuan: String(d.satuan || ''),
+                        stok: parseFloat(d.stok) || 0,
+                        deskripsi: String(d.deskripsi || '')
+                    };
+                }
+
+                // ====== STATS ======
+                function updateStats(data) {
+                    if (!data || !data.length) { $('#statTotal,#statGudang,#statSupplier,#statKota').text('0'); return; }
+                    $('#statTotal').text(data.length);
+                    $('#statGudang').text(new Set(data.map(d=>d.gudang).filter(Boolean)).size);
+                    $('#statSupplier').text(new Set(data.map(d=>d.supplier).filter(Boolean)).size);
+                    $('#statKota').text(new Set(data.map(d=>d.kota).filter(Boolean)).size);
+                }
+
+                // ====== FILTERS ======
+                function populateFilters(data) {
+                    if (!data || !data.length) return;
+                    const cur = { g: $('#filterGudang').val(), s: $('#filterSupplier').val(), k: $('#filterKota').val() };
+                    const $g=$('#filterGudang'), $s=$('#filterSupplier'), $k=$('#filterKota');
+                    $g.find('option:not(:first)').remove(); [...new Set(data.map(d=>d.gudang).filter(Boolean))].sort().forEach(v=>$g.append(`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`)); $g.val(cur.g);
+                    $s.find('option:not(:first)').remove(); [...new Set(data.map(d=>d.supplier).filter(Boolean))].sort().forEach(v=>$s.append(`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`)); $s.val(cur.s);
+                    $k.find('option:not(:first)').remove(); [...new Set(data.map(d=>d.kota).filter(Boolean))].sort().forEach(v=>$k.append(`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`)); $k.val(cur.k);
+                }
+
+                // ====== DATATABLE ======
+                // Kolom sesuai urutan spreadsheet: items, supplier, kota, gudang, tanggal, harga, satuan, stok
+                let table = $('#table_data').DataTable({
+                    data: [],
+                    columns: [
+                        { title:'NO', data:null, width:'50px', className:'text-center', render:(d,t,r,m)=> m.row+1 },
+                        { title:'ITEMS', data:'items', width:'38%', render:d=> d?`<span class="cell-items">${escapeHtml(d)}</span>`:'-' },
+                        { title:'SUPPLIER', data:'supplier', width:'12%', render:d=> escapeHtml(d)||'-' },
+                        { title:'KOTA', data:'kota', width:'8%', render:d=> escapeHtml(d)||'-' },
+                        { title:'GUDANG', data:'gudang', width:'8%', render:d=> escapeHtml(d)||'-' },
+                        { title:'TANGGAL', data:'tanggal', width:'8%', render:d=> d?`<span class="cell-tanggal">${escapeHtml(d)}</span>`:'-' },
+                        { title:'HARGA', data:'harga', width:'12%', className:'cell-harga', render:(d,t)=> t==='display'?formatHarga(d):d },
+                        { title:'SATUAN', data:'satuan', width:'5%', className:'text-center', render:d=> d?`<span class="cell-satuan">${escapeHtml(d)}</span>`:'-' },
+                        { title:'STOK', data:'stok', width:'5%', className:'cell-stok', render:d=> {
+                            const val = d != null ? d : '0';
+                            const num = parseFloat(val) || 0;
+                            const cls = num > 0 ? 'bg-success-light text-success-dark' : 'bg-danger-light text-danger-dark';
+                            return `<span class="badge-stok ${cls}">${escapeHtml(val)}</span>`;
+                        } },
+                        { title:'AKSI', data:null, className:'text-center', width:'110px', render:(d,t,r)=> `
+                            <div class="action-btns">
+                                <button class="btn-act edit" data-id="${escapeHtml(r.id)}" title="Edit"><i class="fas fa-pen"></i></button>
+                                <button class="btn-act view" data-id="${escapeHtml(r.id)}" title="Lihat"><i class="fas fa-eye"></i></button>
+                                <button class="btn-act act-delete delete" data-id="${escapeHtml(r.id)}" data-items="${escapeHtml(r.items)}" title="Hapus"><i class="fas fa-trash"></i></button>
+                            </div>` }
+                    ],
+                    dom: 'rtip',
+                    responsive: true,
+                    deferRender: true,
+                    pageLength: 100,
+                    order: [],
+                    language: {
+                        lengthMenu:'Tampilkan _MENU_ data',
+                        info:'Halaman _PAGE_ dari _PAGES_',
+                        infoEmpty:'Tidak ada data',
+                        paginate:{ previous:'<span>‹</span>', next:'<span>›</span>' },
+                        zeroRecords:'', emptyTable:''
+                    },
+                    drawCallback() {
+                        const $tb=$('#table_data tbody');
+                        const isEmpty=$tb.find('tr').length===0||($tb.find('td').length===1&&$tb.find('td').attr('colspan'));
+                        if(isEmpty) {
+                            const hasS=$('#globalSearch').val()||$('#filterGudang').val()||$('#filterSupplier').val()||$('#filterKota').val();
+                            $tb.html(`<tr><td colspan="10" style="padding:0;border:none"><div class="empty-state"><i class="fas ${hasS?'fa-search':'fa-inbox'}"></i><h3>${hasS?'Tidak ditemukan':'Belum ada data'}</h3><p>${hasS?'Coba ubah filter pencarian':'Klik Tambah Produk untuk menambahkan'}</p></div></td></tr>`);
+                        }
+                        try { if(table) $('#resultNum').text(table.page.info().recordsDisplay); } catch(e){}
+                    }
+                });
+
+                // ====== DUAL-WRITE: Kirim ke GAS ======
+                // [FIX] Sekarang menggunakan POST untuk data yang lebih besar & aman
+                // Action tetap lewat URL param, data lewat body (JSON)
+                function sendToGAS(action, data) {
+                    if (!DUAL_WRITE_ENABLED) return Promise.resolve();
+                    const url = GAS_BASE_URL + '?action=' + encodeURIComponent(action);
+                    if (action === 'delete') {
+                        // Delete hanya butuh ID di URL param
+                        return fetch(url + '&id=' + encodeURIComponent(data.id), {method:'GET',mode:'no-cors'}).catch(e=>console.warn('[GAS]',e));
+                    }
+                    // Insert & Update kirim data via POST body
+                    return fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    }).catch(e=>console.warn('[GAS]',e));
+                }
+
+                // ====== Hapus semua data Firebase ======
+                async function clearFirebaseData() {
+                    let total = 0;
+                    let hasMore = true;
+                    while (hasMore) {
+                        const snap = await productsRef.limit(450).get();
+                        if (snap.empty) { hasMore = false; break; }
+                        let batch = db.batch(), cnt = 0;
+                        snap.forEach(doc => { batch.delete(doc.ref); cnt++; total++; });
+                        await batch.commit();
+                        if (cnt < 450) hasMore = false;
+                    }
+                    return total;
+                }
+
+                // ====== SYNC dari Spreadsheet ======
+                let isSyncing = false;
+                async function syncFromSpreadsheet(forceResync = false) {
+                    if (isSyncing) return;
+                    isSyncing = true;
+                    const $btn = forceResync ? $('#btnResync') : $('#btnSync');
+                    const $icon = $btn.find('i');
+                    $btn.prop('disabled',true); $icon.addClass('fa-spin');
+
+                    try {
+                        // Jika resync, hapus semua data Firebase dulu
+                        if (forceResync) {
+                            toast('Menghapus data Firebase lama...');
+                            const deleted = await clearFirebaseData();
+                            toast(`${deleted} data lama dihapus, mengimport ulang...`);
+                        }
+
+                        const res = await fetch(GAS_BASE_URL+'?action=get-product');
+                        const json = await res.json();
+                        const gasData = json.data || json || [];
+                        if (!gasData.length) { toast('Spreadsheet kosong.','error'); return; }
+
+                        // Cek data yang sudah ada di Firebase (hanya untuk sync biasa)
+                        let existKeys = new Set();
+                        if (!forceResync) {
+                            const snap = await productsRef.get();
+                            snap.forEach(doc => {
+                                const d = doc.data();
+                                if(d.items&&d.supplier&&d.gudang) existKeys.add((d.items+'|'+d.supplier+'|'+d.gudang).toLowerCase());
+                            });
+                        }
+
+                        let imported=0, skipped=0, batch=db.batch(), cnt=0;
+                        for(const item of gasData) {
+                            if (!forceResync) {
+                                const key = ((item.items||'')+'|'+(item.supplier||'')+'|'+(item.gudang||'')).toLowerCase();
+                                if(existKeys.has(key)) { skipped++; continue; }
+                            }
+
+                            let tanggalVal = item.tanggal || '';
+                            if (tanggalVal && !/^\d{2}\/\d{2}\/\d{4}$/.test(tanggalVal)) {
+                                tanggalVal = formatTanggal(tanggalVal);
+                            }
+
+                            // [FIX] Gunakan item.id sebagai Firestore document ID
+                            // agar ID konsisten antara Spreadsheet dan Firebase
+                            const docId = item.id || generateId();
+                            batch.set(productsRef.doc(docId), {
+                                items: item.items || '',
+                                supplier: item.supplier || '',
+                                kota: item.kota || '',
+                                gudang: item.gudang || '',
+                                tanggal: tanggalVal,
+                                harga: parseFloat(item.harga) || 0,
+                                satuan: item.satuan || '',
+                                stok: parseFloat(item.stok) || 0,
+                                deskripsi: item.deskripsi || '',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            imported++; cnt++;
+                            if(cnt>=450) { await batch.commit(); batch=db.batch(); cnt=0; }
+                        }
+                        if(cnt>0) await batch.commit();
+
+                        if(imported>0) toast(`${imported} data diimport dari Spreadsheet!`+(skipped?` (${skipped} duplikat dilewati)`:''));
+                        else if(skipped>0) toast(`Semua ${skipped} data sudah ada.`);
+                        else toast('Tidak ada data baru.','error');
+                    } catch(e) {
+                        console.error('Sync error:', e);
+                        toast('Gagal sync: '+e.message,'error');
+                    } finally {
+                        isSyncing=false; $btn.prop('disabled',false); $icon.removeClass('fa-spin');
+                    }
+                }
+
+                // ====== LOAD FROM GAS ======
+                let isGasLoading = false;
+                async function loadFromGAS() {
+                    if (isGasLoading) return;
+                    isGasLoading = true;
+                    $('#loadingOverlay').show();
+                    try {
+                        const res = await fetch(GAS_BASE_URL+'?action=get-product');
+                        const json = await res.json();
+                        const gasData = json.data || json || [];
+                        
+                        allProducts = gasData.map(item => ({
+                            id: item.id || '',
+                            items: String(item.items || ''),
+                            supplier: String(item.supplier || ''),
+                            kota: String(item.kota || ''),
+                            gudang: String(item.gudang || ''),
+                            tanggal: formatTanggal(item.tanggal),
+                            harga: parseFloat(item.harga) || 0,
+                            satuan: String(item.satuan || ''),
+                            stok: parseFloat(item.stok) || 0,
+                            deskripsi: String(item.deskripsi || '')
+                        }));
+                        
+                        table.clear().rows.add(allProducts).draw();
+                        updateStats(allProducts);
+                        populateFilters(allProducts);
+                        setStatus(true);
+                    } catch(e) {
+                        console.error('Failed to load from GAS:', e);
+                        toast('Gagal memuat data dari Spreadsheet: '+e.message,'error');
+                        setStatus(false);
+                    } finally {
+                        isGasLoading = false;
+                        $('#loadingOverlay').fadeOut(300);
+                    }
+                }
+
+                // ====== REALTIME LISTENER ======
+                let isFirstLoad = true;
+                function startListener() {
+                    unsubscribeSnapshot = productsRef.orderBy('createdAt','desc').onSnapshot(
+                        snap => {
+                            allProducts = [];
+                            snap.forEach(doc => allProducts.push(docToRow(doc)));
+                            table.clear().rows.add(allProducts).draw();
+                            updateStats(allProducts);
+                            populateFilters(allProducts);
+                            $('#loadingOverlay').fadeOut(300);
+                            setStatus(true);
+
+                            // Auto-sync jika Firebase kosong
+                            if(isFirstLoad && allProducts.length===0) {
+                                isFirstLoad=false;
+                                toast('Firebase kosong, mengambil data dari Spreadsheet...');
+                                syncFromSpreadsheet();
+                            } else { isFirstLoad=false; }
+                        },
+                        err => { 
+                            console.error(err); 
+                            setStatus(false); 
+                            $('#loadingOverlay').fadeOut(300); 
+                            toast('Koneksi Firebase terputus','error'); 
+                            
+                            // Auto-fallback jika quota habis
+                            if (err.message && (err.message.includes('quota') || err.message.includes('Quota') || err.code === 'resource-exhausted')) {
+                                toast('Firestore Quota Exceeded. Mengalihkan ke Google Sheets...');
+                                loadFromGAS();
+                            }
+                        }
+                    );
+                }
+
+                // ====== INITIALIZATION ======
+                if (typeof DATA_SOURCE !== 'undefined' && DATA_SOURCE === 'gas') {
+                    toast('Menggunakan data source: Google Sheets');
+                    loadFromGAS();
+                } else {
+                    startListener();
+                }
+
+                // ====== SEARCH & FILTERS ======
+                // Kolom index: 0=NO, 1=ITEMS, 2=SUPPLIER, 3=KOTA, 4=GUDANG, 5=TANGGAL, 6=HARGA, 7=SATUAN, 8=STOK, 9=AKSI
+                let sTimer;
+                $('#globalSearch').on('input', function() {
+                    const v=$(this).val(); $('#searchClear').toggleClass('visible',v.length>0);
+                    clearTimeout(sTimer); sTimer=setTimeout(()=>table.search(v).draw(),300);
+                });
+                $('#searchClear').on('click',()=>$('#globalSearch').val('').trigger('input').focus());
+                $('#filterGudang').on('change',function(){table.column(4).search($(this).val()).draw();});
+                $('#filterSupplier').on('change',function(){table.column(2).search($(this).val()).draw();});
+                $('#filterKota').on('change',function(){table.column(3).search($(this).val()).draw();});
+                $('#resetFilters').on('click',()=>{ $('#globalSearch').val('');$('#searchClear').removeClass('visible');$('#filterGudang,#filterSupplier,#filterKota').val('');table.search('').columns().search('').draw(); });
+                $('#btnSync').on('click', () => syncFromSpreadsheet(false));
+
+                // ====== RESYNC: Hapus Firebase & import ulang ======
+                $('#btnResync').on('click', function(){
+                    if(isSyncing) return;
+                    if(confirm('Resync akan menghapus semua data di Firebase dan mengimport ulang dari Spreadsheet.\n\nPastikan code.gs sudah diupdate dengan versi terbaru!\n\nLanjutkan?')) {
+                        syncFromSpreadsheet(true);
+                    }
+                });
+
+                // ====== VALIDATION ======
+                $('#tanggalProduk').on('input',function(){ const v=$(this).val(); $(this).toggleClass('is-invalid',v&&!isValidTanggal(v)); if(v&&!isValidTanggal(v))$('#tanggalError').text('Format: dd/mm/yyyy'); });
+                $('#hargaProduk,#stokProduk').on('input',function(){ $(this).toggleClass('is-invalid',$(this).val().trim()&&!isNumeric($(this).val().trim())); });
+
+                // ====== TAMBAH ======
+                $('#tambahProduk').on('click',()=>{ clearForm(); $('#myModal').modal('show'); $('#modalTitle').html('<i class="fas fa-plus-circle me-2"></i>Tambah Produk'); });
+
+                // ====== EDIT ======
+                $('#table_data tbody').on('click','.edit',function(){
+                    const d=table.row($(this).parents('tr')).data();
+                    $('#idProduk').val(d.id); $('#itemsProduk').val(d.items); $('#supplierProduk').val(d.supplier);
+                    $('#kotaProduk').val(d.kota); $('#gudangProduk').val(d.gudang); $('#tanggalProduk').val(d.tanggal);
+                    let h=d.harga; if(typeof h==='string') h=h.replace(/[Rp\s.]/g,'').replace(/,/g,'.');
+                    $('#hargaProduk').val(h); $('#satuanProduk').val(d.satuan); $('#stokProduk').val(d.stok); $('#deskripsiProduk').val(d.deskripsi||'');
+                    $('#myModal').modal('show'); $('#modalTitle').html('<i class="fas fa-edit me-2"></i>Edit Produk');
+                });
+
+                // ====== VIEW ======
+                $('#table_data tbody').on('click','.view',function(){
+                    const d=table.row($(this).parents('tr')).data();
+                    $('#viewTitle').text(d.items||'Detail Produk');
+                    const rows = ['items','supplier','kota','gudang','tanggal','harga','satuan','stok','deskripsi'];
+                    const labels = ['Items','Supplier','Kota','Gudang','Tanggal','Harga','Satuan','Stok','Deskripsi'];
+                    let html = '';
+                    rows.forEach((key,i) => {
+                        let val = d[key] || '-';
+                        if(key==='harga') val = formatHarga(d[key]);
+                        html += `<div class="view-row"><span class="view-label">${labels[i]}</span><span class="view-value">${escapeHtml(String(val))}</span></div>`;
+                    });
+                    $('#viewBody').html(html);
+                    $('#viewModal').modal('show');
+                });
+
+                // ====== DELETE ======
+                $('#table_data tbody').on('click','.delete',function(){
+                    const d=table.row($(this).parents('tr')).data();
+                    deleteTargetId=d.id; $('#deleteItemName').text(d.items||'ini'); $('#deleteModal').modal('show');
+                });
+
+                $('#btnConfirmDelete').on('click', async function(){
+                    if(isDeleting||!deleteTargetId) return;
+                    const $btn=$(this),$sp=$btn.find('.spinner-border'),$tx=$btn.find('.btn-text');
+                    isDeleting=true; $btn.prop('disabled',true); $tx.addClass('d-none'); $sp.removeClass('d-none');
+                    try {
+                        const useFirebase = (typeof DATA_SOURCE !== 'undefined' && DATA_SOURCE === 'firebase' && $('#statusDot').hasClass('online'));
+
+                        if (useFirebase) {
+                            await productsRef.doc(deleteTargetId).delete();
+                            sendToGAS('delete', {id: deleteTargetId});
+                            toast('Data berhasil dihapus!');
+                        } else {
+                            await sendToGAS('delete', {id: deleteTargetId});
+                            allProducts = allProducts.filter(p => p.id !== deleteTargetId);
+                            table.clear().rows.add(allProducts).draw();
+                            updateStats(allProducts);
+                            populateFilters(allProducts);
+                            toast('Data dihapus dari Spreadsheet!');
+                        }
+                        $('#deleteModal').modal('hide');
+                    } catch(e){ toast('Gagal hapus: '+e.message,'error'); }
+                    finally { isDeleting=false; deleteTargetId=null; $btn.prop('disabled',false); $tx.removeClass('d-none'); $sp.addClass('d-none'); }
+                });
+
+                // ====== SIMPAN ======
+                $('#btnSimpan').on('click', async function(){
+                    if(isSaving) return;
+                    const $btn=$(this),$sp=$btn.find('.spinner-border'),$tx=$btn.find('.btn-text');
+                    const rawHarga = $('#hargaProduk').val().trim();
+                    const rawStok = $('#stokProduk').val().trim();
+
+                    const fd = {
+                        items:$('#itemsProduk').val().trim(), supplier:$('#supplierProduk').val().trim(), kota:$('#kotaProduk').val().trim(),
+                        gudang:$('#gudangProduk').val(), tanggal:$('#tanggalProduk').val().trim(), harga:rawHarga,
+                        satuan:$('#satuanProduk').val(), stok:rawStok, deskripsi:$('#deskripsiProduk').val().trim()
+                    };
+                    const editId=$('#idProduk').val();
+
+                    if(!fd.items||!fd.supplier||!fd.kota||!fd.gudang||!fd.tanggal||!fd.harga||!fd.satuan||!fd.stok){ toast('Lengkapi semua field!','error'); return; }
+                    if(!isValidTanggal(fd.tanggal)){ $('#tanggalProduk').addClass('is-invalid'); $('#tanggalError').text('Format dd/mm/yyyy'); return; }
+                    if(!isNumeric(fd.harga)){ $('#hargaProduk').addClass('is-invalid'); toast('Harga harus angka!','error'); return; }
+                    if(!isNumeric(fd.stok)){ $('#stokProduk').addClass('is-invalid'); toast('Stok harus angka!','error'); return; }
+
+                    isSaving=true; $btn.prop('disabled',true); $tx.addClass('d-none'); $sp.removeClass('d-none');
+
+                    try {
+                        const parsedHarga = parseIndonesianNumber(fd.harga);
+                        const parsedStok = parseIndonesianNumber(fd.stok);
+                        const saveData = {...fd, harga:parsedHarga, stok:parsedStok};
+
+                        const useFirebase = (typeof DATA_SOURCE !== 'undefined' && DATA_SOURCE === 'firebase' && $('#statusDot').hasClass('online'));
+
+                        if (useFirebase) {
+                            if(editId) {
+                                // [FIX] Update: ID sudah konsisten antara Firebase & Spreadsheet
+                                await productsRef.doc(editId).update(saveData);
+                                sendToGAS('update', {id:editId, ...fd, harga:parsedHarga, stok:parsedStok});
+                                toast('Data berhasil diperbarui!');
+                            } else {
+                                // [FIX] Insert: Generate ID di frontend, gunakan doc(id).set() bukan add()
+                                // Ini memastikan ID sama antara Firebase dan Spreadsheet
+                                const newId = generateId();
+                                saveData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                                await productsRef.doc(newId).set(saveData);
+                                sendToGAS('insert', {id:newId, ...fd, harga:parsedHarga, stok:parsedStok});
+                                toast('Data berhasil ditambahkan!');
+                            }
+                        } else {
+                            // Tulis ke GAS saja
+                            const targetId = editId || generateId();
+                            const action = editId ? 'update' : 'insert';
+                            
+                            await sendToGAS(action, {id:targetId, ...fd, harga:parsedHarga, stok:parsedStok});
+                            
+                            // Update UI secara lokal
+                            const localItem = {
+                                id: targetId,
+                                items: fd.items,
+                                supplier: fd.supplier,
+                                kota: fd.kota,
+                                gudang: fd.gudang,
+                                tanggal: fd.tanggal,
+                                harga: parsedHarga,
+                                satuan: fd.satuan,
+                                stok: parsedStok,
+                                deskripsi: fd.deskripsi
+                            };
+                            
+                            if (editId) {
+                                const idx = allProducts.findIndex(p => p.id === editId);
+                                if (idx !== -1) allProducts[idx] = localItem;
+                            } else {
+                                allProducts.unshift(localItem);
+                            }
+                            table.clear().rows.add(allProducts).draw();
+                            updateStats(allProducts);
+                            populateFilters(allProducts);
+                            
+                            toast('Data disimpan ke Spreadsheet!');
+                        }
+                        $('#myModal').modal('hide'); clearForm();
+                    } catch(e){ toast('Gagal simpan: '+e.message,'error'); }
+                    finally { isSaving=false; $btn.prop('disabled',false); $tx.removeClass('d-none'); $sp.addClass('d-none'); }
+                });
+
+                // Enter to submit
+                $('#productForm').on('keypress',e=>{ if(e.which===13&&e.target.tagName!=='TEXTAREA'){e.preventDefault();$('#btnSimpan').click();} });
+
+                function clearForm(){ $('#productForm')[0].reset(); $('#idProduk').val(''); $('#tanggalProduk,#hargaProduk,#stokProduk').removeClass('is-invalid'); }
+            });
+        </script>
+    </body>
+</html>
