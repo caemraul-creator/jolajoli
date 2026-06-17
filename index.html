@@ -418,11 +418,13 @@
             min-width: 120px;
         }
 
+        /* ====== PERBAIKAN KOLOM AKSI ====== */
         #table_data thead th:last-child,
         #table_data tbody td:last-child {
-            width: 90px;
-            min-width: 75px;
-            max-width: 100px;
+            width: 110px !important;
+            min-width: 110px !important;
+            max-width: 110px !important;
+            text-align: center !important;
         }
 
         #table_data tbody tr {
@@ -498,31 +500,47 @@
             display: inline-block;
         }
 
-        /* Action buttons */
+        /* ====== ACTION BUTTONS ====== */
         .action-btns { 
-            display: flex; 
-            justify-content: center; 
-            gap: 4px;
-            flex-wrap: wrap;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 6px !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
         }
 
         .btn-act {
             border: 1px solid var(--border);
             border-radius: 8px;
-            width: 32px; 
-            height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.78rem;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            max-width: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.78rem !important;
             cursor: pointer;
             transition: all 0.2s ease;
             background: #ffffff;
             color: var(--text-muted);
-            flex-shrink: 0;
+            flex-shrink: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
-        .btn-act:hover { border-color: var(--accent); color: var(--accent); background: var(--primary-light); }
-        .btn-act.act-delete:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+        .btn-act:hover { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+            background: var(--primary-light); 
+        }
+        .btn-act.act-delete:hover { 
+            border-color: var(--red); 
+            color: var(--red); 
+            background: var(--red-light); 
+        }
 
         /* Empty state */
         .empty-state {
@@ -836,15 +854,26 @@
                 padding: 8px 8px;
                 font-size: 0.72rem;
             }
-            
-            .action-btns {
-                gap: 3px;
+
+            #table_data thead th:last-child,
+            #table_data tbody td:last-child {
+                width: 100px !important;
+                min-width: 100px !important;
+                max-width: 100px !important;
             }
             
             .btn-act {
-                width: 28px;
-                height: 28px;
-                font-size: 0.7rem;
+                width: 28px !important;
+                height: 28px !important;
+                min-width: 28px !important;
+                max-width: 28px !important;
+                min-height: 28px !important;
+                max-height: 28px !important;
+                font-size: 0.7rem !important;
+            }
+            
+            .action-btns {
+                gap: 4px !important;
             }
         }
 
@@ -985,9 +1014,24 @@
 
             #table_data thead th:last-child,
             #table_data tbody td:last-child {
-                width: 75px;
-                min-width: 60px;
-                max-width: 80px;
+                width: 85px !important;
+                min-width: 85px !important;
+                max-width: 85px !important;
+            }
+            
+            .btn-act {
+                width: 24px !important;
+                height: 24px !important;
+                min-width: 24px !important;
+                max-width: 24px !important;
+                min-height: 24px !important;
+                max-height: 24px !important;
+                font-size: 0.6rem !important;
+                border-radius: 6px !important;
+            }
+            
+            .action-btns {
+                gap: 3px !important;
             }
             
             .cell-items {
@@ -1002,17 +1046,6 @@
             .badge-stok {
                 font-size: 0.6rem;
                 padding: 2px 6px;
-            }
-            
-            .btn-act {
-                width: 24px;
-                height: 24px;
-                font-size: 0.6rem;
-                border-radius: 6px;
-            }
-            
-            .action-btns {
-                gap: 2px;
             }
             
             .dataTables_length {
@@ -1142,20 +1175,28 @@
 
             #table_data thead th:last-child,
             #table_data tbody td:last-child {
-                width: 65px;
-                min-width: 50px;
-                max-width: 70px;
+                width: 75px !important;
+                min-width: 75px !important;
+                max-width: 75px !important;
+            }
+            
+            .btn-act {
+                width: 22px !important;
+                height: 22px !important;
+                min-width: 22px !important;
+                max-width: 22px !important;
+                min-height: 22px !important;
+                max-height: 22px !important;
+                font-size: 0.5rem !important;
+                border-radius: 4px !important;
+            }
+            
+            .action-btns {
+                gap: 2px !important;
             }
             
             .cell-items {
                 font-size: 0.6rem;
-            }
-            
-            .btn-act {
-                width: 20px;
-                height: 20px;
-                font-size: 0.5rem;
-                border-radius: 4px;
             }
             
             .header-actions {
@@ -1611,7 +1652,7 @@
                         const cls = num > 0 ? 'bg-success-light text-success-dark' : 'bg-danger-light text-danger-dark';
                         return `<span class="badge-stok ${cls}">${escapeHtml(val)}</span>`;
                     } },
-                    { title:'AKSI', data:null, className:'text-center', width:'90px', render:(d,t,r)=> `
+                    { title:'AKSI', data:null, className:'text-center', width:'110px', render:(d,t,r)=> `
                         <div class="action-btns">
                             <button class="btn-act edit" data-id="${escapeHtml(r.id)}" title="Edit"><i class="fas fa-pen"></i></button>
                             <button class="btn-act view" data-id="${escapeHtml(r.id)}" title="Lihat"><i class="fas fa-eye"></i></button>
@@ -1786,6 +1827,7 @@
                     updateStats(allProducts);
                     populateFilters(allProducts);
                     setStatus(true);
+                    adjustDataTable();
                 } catch(e) {
                     console.error('Failed to load from GAS:', e);
                     toast('Gagal memuat data dari Spreadsheet: '+e.message,'error');
