@@ -846,7 +846,6 @@
             
             #table_data {
                 min-width: 600px;
-                font-size: 0.78rem;
             }
             
             #table_data thead th,
@@ -996,13 +995,12 @@
             
             #table_data {
                 min-width: 480px;
-                font-size: 0.7rem;
             }
             
             #table_data thead th,
             #table_data tbody td {
                 padding: 6px 5px;
-                font-size: 0.65rem;
+                font-size: 0.65rem !important;
             }
             
             #table_data thead th:first-child,
@@ -1017,6 +1015,18 @@
                 width: 85px !important;
                 min-width: 85px !important;
                 max-width: 85px !important;
+            }
+
+            /* Perbaikan khusus untuk kolom Items di mobile */
+            #table_data tbody td:nth-child(2) .cell-items {
+                font-size: 0.65rem !important;
+                line-height: 1.3;
+            }
+
+            /* Perbaikan khusus untuk kolom Tanggal di mobile */
+            #table_data tbody td:nth-child(6) .cell-tanggal {
+                font-size: 0.6rem !important;
+                white-space: nowrap;
             }
             
             .btn-act {
@@ -1035,7 +1045,7 @@
             }
             
             .cell-items {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
             }
             
             .cell-satuan {
@@ -1157,13 +1167,12 @@
             
             #table_data {
                 min-width: 380px;
-                font-size: 0.6rem;
             }
             
             #table_data thead th,
             #table_data tbody td {
                 padding: 4px 3px;
-                font-size: 0.58rem;
+                font-size: 0.58rem !important;
             }
             
             #table_data thead th:first-child,
@@ -1178,6 +1187,18 @@
                 width: 75px !important;
                 min-width: 75px !important;
                 max-width: 75px !important;
+            }
+
+            /* Perbaikan khusus untuk kolom Items di mobile kecil */
+            #table_data tbody td:nth-child(2) .cell-items {
+                font-size: 0.55rem !important;
+                line-height: 1.2;
+            }
+
+            /* Perbaikan khusus untuk kolom Tanggal di mobile kecil */
+            #table_data tbody td:nth-child(6) .cell-tanggal {
+                font-size: 0.5rem !important;
+                white-space: nowrap;
             }
             
             .btn-act {
@@ -1196,7 +1217,7 @@
             }
             
             .cell-items {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
             }
             
             .header-actions {
