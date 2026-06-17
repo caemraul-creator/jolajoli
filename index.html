@@ -825,6 +825,20 @@
         /* ====== RESPONSIVE BREAKPOINTS ====== */
         /* ============================================================ */
 
+        /* ====== DESKTOP: SEMBUNYIKAN KOLOM STOK ====== */
+        @media (min-width: 769px) {
+            #table_data thead th:nth-child(9),
+            #table_data tbody td:nth-child(9) {
+                display: none !important;
+            }
+            
+            /* Kolom AKSI tetap terlihat di desktop */
+            #table_data thead th:last-child,
+            #table_data tbody td:last-child {
+                display: table-cell !important;
+            }
+        }
+
         /* Tablet & Desktop Kecil */
         @media (max-width: 992px) {
             .main-wrap {
@@ -876,7 +890,7 @@
             }
         }
 
-        /* Mobile Large */
+        /* ====== MOBILE: SEMBUNYIKAN KOLOM STOK, KOTA, DAN AKSI ====== */
         @media (max-width: 768px) {
             .main-wrap {
                 padding: 12px 8px;
@@ -994,7 +1008,7 @@
             }
             
             #table_data {
-                min-width: 480px;
+                min-width: 420px;
             }
             
             #table_data thead th,
@@ -1005,16 +1019,68 @@
             
             #table_data thead th:first-child,
             #table_data tbody td:first-child {
-                width: 35px;
+                width: 32px;
                 min-width: 25px;
-                max-width: 40px;
+                max-width: 38px;
             }
 
+            /* ====== SEMBUNYIKAN KOLOM STOK (index 9) ====== */
+            #table_data thead th:nth-child(9),
+            #table_data tbody td:nth-child(9) {
+                display: none !important;
+            }
+
+            /* ====== SEMBUNYIKAN KOLOM KOTA (index 4) ====== */
+            #table_data thead th:nth-child(4),
+            #table_data tbody td:nth-child(4) {
+                display: none !important;
+            }
+
+            /* ====== SEMBUNYIKAN KOLOM AKSI (index 10) ====== */
             #table_data thead th:last-child,
             #table_data tbody td:last-child {
-                width: 85px !important;
-                min-width: 85px !important;
-                max-width: 85px !important;
+                display: none !important;
+                width: 0 !important;
+                min-width: 0 !important;
+                max-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Perbaikan lebar kolom yang tersisa */
+            #table_data thead th:nth-child(2),
+            #table_data tbody td:nth-child(2) {
+                width: 35% !important;
+                min-width: 100px;
+            }
+
+            #table_data thead th:nth-child(3),
+            #table_data tbody td:nth-child(3) {
+                width: 15% !important;
+                min-width: 60px;
+            }
+
+            #table_data thead th:nth-child(5),
+            #table_data tbody td:nth-child(5) {
+                width: 12% !important;
+                min-width: 50px;
+            }
+
+            #table_data thead th:nth-child(6),
+            #table_data tbody td:nth-child(6) {
+                width: 12% !important;
+                min-width: 60px;
+            }
+
+            #table_data thead th:nth-child(7),
+            #table_data tbody td:nth-child(7) {
+                width: 14% !important;
+                min-width: 60px;
+            }
+
+            #table_data thead th:nth-child(8),
+            #table_data tbody td:nth-child(8) {
+                width: 10% !important;
+                min-width: 40px;
             }
 
             /* Perbaikan khusus untuk kolom Items di mobile */
@@ -1027,21 +1093,6 @@
             #table_data tbody td:nth-child(6) .cell-tanggal {
                 font-size: 0.6rem !important;
                 white-space: nowrap;
-            }
-            
-            .btn-act {
-                width: 24px !important;
-                height: 24px !important;
-                min-width: 24px !important;
-                max-width: 24px !important;
-                min-height: 24px !important;
-                max-height: 24px !important;
-                font-size: 0.6rem !important;
-                border-radius: 6px !important;
-            }
-            
-            .action-btns {
-                gap: 3px !important;
             }
             
             .cell-items {
@@ -1166,7 +1217,7 @@
             }
             
             #table_data {
-                min-width: 380px;
+                min-width: 340px;
             }
             
             #table_data thead th,
@@ -1177,16 +1228,45 @@
             
             #table_data thead th:first-child,
             #table_data tbody td:first-child {
-                width: 28px;
+                width: 26px;
                 min-width: 20px;
-                max-width: 32px;
+                max-width: 30px;
             }
 
-            #table_data thead th:last-child,
-            #table_data tbody td:last-child {
-                width: 75px !important;
-                min-width: 75px !important;
-                max-width: 75px !important;
+            #table_data thead th:nth-child(2),
+            #table_data tbody td:nth-child(2) {
+                width: 30% !important;
+                min-width: 80px;
+            }
+
+            #table_data thead th:nth-child(3),
+            #table_data tbody td:nth-child(3) {
+                width: 14% !important;
+                min-width: 50px;
+            }
+
+            #table_data thead th:nth-child(5),
+            #table_data tbody td:nth-child(5) {
+                width: 12% !important;
+                min-width: 40px;
+            }
+
+            #table_data thead th:nth-child(6),
+            #table_data tbody td:nth-child(6) {
+                width: 12% !important;
+                min-width: 50px;
+            }
+
+            #table_data thead th:nth-child(7),
+            #table_data tbody td:nth-child(7) {
+                width: 14% !important;
+                min-width: 50px;
+            }
+
+            #table_data thead th:nth-child(8),
+            #table_data tbody td:nth-child(8) {
+                width: 10% !important;
+                min-width: 35px;
             }
 
             /* Perbaikan khusus untuk kolom Items di mobile kecil */
@@ -1199,21 +1279,6 @@
             #table_data tbody td:nth-child(6) .cell-tanggal {
                 font-size: 0.5rem !important;
                 white-space: nowrap;
-            }
-            
-            .btn-act {
-                width: 22px !important;
-                height: 22px !important;
-                min-width: 22px !important;
-                max-width: 22px !important;
-                min-height: 22px !important;
-                max-height: 22px !important;
-                font-size: 0.5rem !important;
-                border-radius: 4px !important;
-            }
-            
-            .action-btns {
-                gap: 2px !important;
             }
             
             .cell-items {
