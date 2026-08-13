@@ -21,7 +21,7 @@ const FIRESTORE_COLLECTION = "products";
 
 // ====== Google Apps Script Backend URL ======
 // URL ini digunakan untuk menulis data ke Spreadsheet sebagai backup
-const GAS_BASE_URL = https://script.google.com/macros/s/AKfycbzzTlfNiN25nJ6M1xQJAshda523oLJzL0aZjpb5GCpoIfXeNuAIm-WW-SdosVmh_Zga/exec;
+const GAS_BASE_URL = "https://script.google.com/macros/s/AKfycbzzTlfNiN25nJ6M1xQJAshda523oLJzL0aZjpb5GCpoIfXeNuAIm-WW-SdosVmh_Zga/exec";
 
 // ====== Dual-Write Mode ======
 // true  = Tulis ke Firebase DAN Spreadsheet (direkomendasikan)
